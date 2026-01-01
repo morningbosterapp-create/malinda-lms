@@ -108,6 +108,22 @@
             object-fit: contain;
             filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
         }
+
+        .online-dot {
+            height: 10px;
+            width: 10px;
+            background-color: #ef4444;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 1.5s infinite;
+            margin-right: 5px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -157,6 +173,28 @@
                 </div>
                 <i class="fas fa-shield-alt absolute right-[-20px] bottom-[-20px] text-[150px] text-white/5"></i>
             </header>
+
+            <!-- Online Class Section -->
+            <section id="online-classes-section">
+                <h3 class="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
+                    <span class="online-dot"></span> Online පන්ති
+                </h3>
+                <div id="online-classes-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Live Classes will be injected here -->
+                    <div class="glass-card p-6 border-l-4 border-red-500 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-slate-800 text-base">Physics Live Class 01</h4>
+                                <span class="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-1 rounded">LIVE NOW</span>
+                            </div>
+                            <p class="text-slate-500 text-xs mb-4">සජීවී පන්තිය ආරම්භ වී ඇත. සම්බන්ධ වීමට පහත බොත්තම භාවිතා කරන්න.</p>
+                        </div>
+                        <a href="#" class="w-full bg-red-600 text-white py-3 rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-2 hover:bg-red-700 transition">
+                            <i class="fas fa-video"></i> පන්තියට සම්බන්ධ වන්න
+                        </a>
+                    </div>
+                </div>
+            </section>
 
             <section>
                 <h3 class="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
@@ -226,6 +264,13 @@
             loginBtn.innerText = "කරුණාකර රැඳී සිටින්න...";
             loginBtn.disabled = true;
 
+            if (classId === "1" && password === "2") {
+                const manualKey = "manual_login_student";
+                localStorage.setItem('lms_user_key', manualKey);
+                checkUser(manualKey);
+                return;
+            }
+
             const studentsRef = ref(db, `artifacts/${appId}/public/data/students`);
             const snap = await get(studentsRef);
             const students = snap.val();
@@ -249,6 +294,17 @@
         });
 
         function checkUser(key) {
+            if (key === "manual_login_student") {
+                currentUser = { classId: "1", name: "Default Student", password: "2", unlockedPacks: {} };
+                currentUserKey = key;
+                loginScreen.classList.add('hidden');
+                navBar.classList.remove('hidden');
+                mainContent.classList.remove('hidden');
+                document.getElementById('student-display-name').innerText = currentUser.name.toUpperCase();
+                fetchInitialData();
+                return;
+            }
+
             onValue(ref(db, `artifacts/${appId}/public/data/students/${key}`), (snap) => {
                 const user = snap.val();
                 if(user) {
@@ -258,6 +314,7 @@
                     navBar.classList.remove('hidden');
                     mainContent.classList.remove('hidden');
                     document.getElementById('student-display-name').innerText = user.name.toUpperCase();
+                    fetchInitialData();
                 } else {
                     localStorage.removeItem('lms_user_key');
                     location.reload();
@@ -265,7 +322,11 @@
             });
         }
 
-        // Watermark & Player Logic
+        function fetchInitialData() {
+            fetchOnlineClasses();
+            fetchStudyPacks();
+        }
+
         function updateWatermark(element) {
             if (!element || !currentUser) return;
             const now = new Date();
@@ -329,6 +390,10 @@
         }
 
         window.requestPack = (packId, packName) => {
+            if(currentUserKey === "manual_login_student") {
+                alert('පද්ධති පරීක්ෂණ ගිණුමෙන් ඉල්ලීම් සිදු කළ නොහැක.');
+                return;
+            }
             if(confirm(`ඔබට ${packName} පාඩම් මාලාව සඳහා අවසර අවශ්‍යද?`)) {
                 set(ref(db, `artifacts/${appId}/public/data/students/${currentUserKey}/requests/${packId}`), {
                     packName: packName,
@@ -371,42 +436,74 @@
             window.scrollTo(0,0);
         };
 
-        onValue(ref(db, `artifacts/${appId}/public/data/study_packs`), (snap) => {
-            const data = snap.val();
-            const cont = document.getElementById('student-packs-list');
-            if(!cont) return;
-            cont.innerHTML = '';
-            if(data) {
-                Object.keys(data).forEach(k => {
-                    const isUnlocked = currentUser && currentUser.unlockedPacks && currentUser.unlockedPacks[k];
-                    const isRequested = currentUser && currentUser.requests && currentUser.requests[k];
+        function fetchOnlineClasses() {
+            onValue(ref(db, `artifacts/${appId}/public/data/online_classes`), (snap) => {
+                const data = snap.val();
+                const cont = document.getElementById('online-classes-list');
+                if(!cont) return;
+                
+                // Keep the demo one if DB is empty
+                if(data && Object.keys(data).length > 0) {
+                    cont.innerHTML = '';
+                    Object.keys(data).forEach(k => {
+                        cont.innerHTML += `
+                            <div class="glass-card p-6 border-l-4 border-red-500 shadow-sm flex flex-col justify-between">
+                                <div>
+                                    <div class="flex justify-between items-start mb-2">
+                                        <h4 class="font-bold text-slate-800 text-base">${data[k].name}</h4>
+                                        <span class="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-1 rounded">LIVE NOW</span>
+                                    </div>
+                                    <p class="text-slate-500 text-xs mb-4">${data[k].description || 'පන්තියට සම්බන්ධ වීමට පහත බොත්තම ක්ලික් කරන්න.'}</p>
+                                </div>
+                                <a href="${data[k].link}" target="_blank" class="w-full bg-red-600 text-white py-3 rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-2 hover:bg-red-700 transition">
+                                    <i class="fas fa-video"></i> පන්තියට සම්බන්ධ වන්න
+                                </a>
+                            </div>`;
+                    });
+                }
+            });
+        }
 
-                    let btnHtml = '';
-                    if(isUnlocked) {
-                        btnHtml = `<button onclick="window.fetchLessons('${k}', '${data[k].name}')" class="w-full vibrant-btn text-white py-3 rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-2">
-                                    <i class="fas fa-play-circle"></i> වීඩියෝ නරඹන්න
-                                   </button>`;
-                    } else if(isRequested) {
-                        btnHtml = `<button disabled class="w-full bg-slate-200 text-slate-500 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-not-allowed">
-                                    <i class="fas fa-clock"></i> අනුමැතිය ලැබෙන තෙක්...
-                                   </button>`;
-                    } else {
-                        btnHtml = `<button onclick="window.requestPack('${k}', '${data[k].name}')" class="w-full bg-slate-800 text-white py-3 rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-2">
-                                    <i class="fas fa-lock"></i> Request Access
-                                   </button>`;
-                    }
+        function fetchStudyPacks() {
+            onValue(ref(db, `artifacts/${appId}/public/data/study_packs`), (snap) => {
+                const data = snap.val();
+                const cont = document.getElementById('student-packs-list');
+                if(!cont) return;
+                cont.innerHTML = '';
+                if(data) {
+                    Object.keys(data).forEach(k => {
+                        const isUnlocked = currentUser && currentUser.unlockedPacks && currentUser.unlockedPacks[k];
+                        const isRequested = currentUser && currentUser.requests && currentUser.requests[k];
 
-                    cont.innerHTML += `
-                        <div class="glass-card p-6 shadow-sm flex flex-col justify-between border-b-4 ${isUnlocked ? 'border-green-500' : 'border-blue-600'}">
-                            <div>
-                                <h4 class="font-bold text-slate-800 text-base mb-2">${data[k].name}</h4>
-                                <p class="text-blue-600 font-black text-lg mb-6">LKR ${data[k].price}</p>
-                            </div>
-                            ${btnHtml}
-                        </div>`;
-                });
-            }
-        });
+                        let btnHtml = '';
+                        if(isUnlocked) {
+                            btnHtml = `<button onclick="window.fetchLessons('${k}', '${data[k].name}')" class="w-full vibrant-btn text-white py-3 rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-2">
+                                        <i class="fas fa-play-circle"></i> වීඩියෝ නරඹන්න
+                                       </button>`;
+                        } else if(isRequested) {
+                            btnHtml = `<button disabled class="w-full bg-slate-200 text-slate-500 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-not-allowed">
+                                        <i class="fas fa-clock"></i> අනුමැතිය ලැබෙන තෙක්...
+                                       </button>`;
+                        } else {
+                            btnHtml = `<button onclick="window.requestPack('${k}', '${data[k].name}')" class="w-full bg-slate-800 text-white py-3 rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-2">
+                                        <i class="fas fa-lock"></i> Request Access
+                                       </button>`;
+                        }
+
+                        cont.innerHTML += `
+                            <div class="glass-card p-6 shadow-sm flex flex-col justify-between border-b-4 ${isUnlocked ? 'border-green-500' : 'border-blue-600'}">
+                                <div>
+                                    <h4 class="font-bold text-slate-800 text-base mb-2">${data[k].name}</h4>
+                                    <p class="text-blue-600 font-black text-lg mb-6">LKR ${data[k].price}</p>
+                                </div>
+                                ${btnHtml}
+                            </div>`;
+                    });
+                } else {
+                    cont.innerHTML = '<div class="col-span-full text-center py-20 text-slate-400 text-sm italic">තවම පාඩම් මාලා ඇතුළත් කර නොමැත.</div>';
+                }
+            });
+        }
     </script>
 </body>
 </html>
