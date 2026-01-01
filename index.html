@@ -48,7 +48,7 @@
             border: none;
         }
 
-        /* ආරක්ෂක ස්ථරය - මෙයට pointer-events: none එක් කළා එවිට ක්ලික් කළ හැකියි */
+        /* ආරක්ෂක ස්ථරය */
         .video-shield {
             position: absolute;
             top: 0;
@@ -57,7 +57,23 @@
             height: 100%;
             z-index: 10;
             background: rgba(0,0,0,0);
-            pointer-events: none; /* මෙය මගින් ක්ලික් එක වීඩියෝවට යාමට ඉඩ සලසයි */
+            pointer-events: none;
+        }
+
+        /* Dynamic Watermark Style */
+        .dynamic-watermark {
+            position: absolute;
+            z-index: 20;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 12px;
+            font-weight: bold;
+            pointer-events: none;
+            white-space: nowrap;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            transition: all 5s ease-in-out;
+            padding: 5px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 4px;
         }
 
         .vibrant-btn {
@@ -141,6 +157,31 @@
         const db = getDatabase(app); 
         const appId = "malinda-lms";
 
+        let userIp = "Loading...";
+        // ශිෂ්‍යයාගේ IP එක ලබාගැනීම
+        fetch('https://api.ipify.org?format=json')
+            .then(res => res.json())
+            .then(data => userIp = data.ip)
+            .catch(() => userIp = "Hidden IP");
+
+        function updateWatermark(element) {
+            if (!element) return;
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString();
+            const dateStr = now.toLocaleDateString();
+            // මෙහි 'ශිෂ්‍යයා' වෙනුවට පද්ධතියට ලොග් වී ඇති නම පෙන්විය හැක
+            element.innerText = `Student | IP: ${userIp} | ${dateStr} ${timeStr}`;
+            
+            // ස්ථානය වෙනස් කිරීම (Random movement)
+            const parent = element.parentElement;
+            if(parent) {
+                const maxX = parent.offsetWidth - element.offsetWidth;
+                const maxY = parent.offsetHeight - element.offsetHeight;
+                element.style.left = Math.random() * maxX + "px";
+                element.style.top = Math.random() * maxY + "px";
+            }
+        }
+
         function generateSecurePlayer(url) {
             if (!url) return '';
             let playerHtml = '';
@@ -158,7 +199,23 @@
                               </video>`;
             }
 
-            return `<div class="video-container">${playerHtml}<div class="video-shield"></div></div>`;
+            const watermarkId = "wm-" + Math.random().toString(36).substr(2, 9);
+            
+            // Watermark එකක් සමඟ Container එක සෑදීම
+            setTimeout(() => {
+                const wm = document.getElementById(watermarkId);
+                if(wm) {
+                    updateWatermark(wm);
+                    setInterval(() => updateWatermark(wm), 7000);
+                }
+            }, 1000);
+
+            return `
+                <div class="video-container">
+                    ${playerHtml}
+                    <div class="video-shield"></div>
+                    <div id="${watermarkId}" class="dynamic-watermark">Loading...</div>
+                </div>`;
         }
 
         window.fetchLessons = (packId, packName) => {
