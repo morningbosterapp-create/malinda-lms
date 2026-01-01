@@ -221,16 +221,22 @@
             if (action === 'full') {
                 if (container.requestFullscreen) container.requestFullscreen();
                 else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+                else if (container.mozRequestFullScreen) container.mozRequestFullScreen();
+                else if (container.msRequestFullscreen) container.msRequestFullscreen();
                 return;
             }
 
             // Google Drive / Youtube පාලනය
-            const msg = action === 'play' ? '{"event":"command","func":"playVideo","args":""}' : 
-                        action === 'pause' ? '{"event":"command","func":"pauseVideo","args":""}' : '';
-            
-            if (msg) iframe.contentWindow.postMessage(msg, '*');
+            // API මගින් Play/Pause විධානයන් යැවීම
+            let command = "";
+            if (action === 'play') command = '{"event":"command","func":"playVideo","args":""}';
+            else if (action === 'pause') command = '{"event":"command","func":"pauseVideo","args":""}';
 
-            // සාමාන්‍ය වීඩියෝ ටැග් සඳහා
+            if (command) {
+                iframe.contentWindow.postMessage(command, '*');
+            }
+
+            // සෘජු HTML5 Video tag එකක් නම් (Direct MP4)
             const videoTag = container.querySelector('video');
             if (videoTag) {
                 if (action === 'play') videoTag.play();
@@ -247,6 +253,7 @@
             
             if (url.includes('drive.google.com')) {
                 let id = url.includes('/d/') ? url.split('/d/')[1].split('/')[0] : url.split('id=')[1].split('&')[0];
+                // enablejsapi=1 එක් කළේ පිටතින් පාලනය කිරීමටයි
                 playerHtml = `<iframe id="${uniqueId}" src="https://drive.google.com/file/d/${id}/preview?rm=minimal&enablejsapi=1" allow="autoplay"></iframe>`;
             } else if (url.includes('youtube.com') || url.includes('youtu.be')) {
                 let id = url.split('v=')[1] || url.split('/').pop();
