@@ -18,14 +18,21 @@
 
         body { 
             font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif; 
-            background: #f1f5f9;
+            background: #f8fafc;
             overscroll-behavior-y: contain;
         }
         
         .glass-card {
-            background: #ffffff;
-            border-radius: 20px;
-            border: 1px solid #e2e8f0;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 24px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1);
         }
 
         .video-container {
@@ -33,9 +40,9 @@
             width: 100%;
             padding-bottom: 56.25%;
             background: #000;
-            border-radius: 16px;
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
         .video-container iframe, .video-container video {
@@ -59,137 +66,164 @@
 
         .fs-overlay-btn {
             position: absolute;
-            bottom: 10px;
-            right: 10px;
+            bottom: 15px;
+            right: 15px;
             z-index: 30;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.7);
             color: white;
             border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
+            padding: 10px 16px;
+            border-radius: 12px;
             cursor: pointer;
             font-size: 14px;
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(8px);
             transition: all 0.2s;
         }
 
         .dynamic-watermark {
             position: absolute;
             z-index: 20;
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 12px;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 11px;
             font-weight: bold;
             pointer-events: none;
             white-space: nowrap;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
             transition: all 5s ease-in-out;
-            padding: 5px;
-            background: rgba(0,0,0,0.1);
-            border-radius: 4px;
+            padding: 6px 10px;
+            background: rgba(0,0,0,0.15);
+            border-radius: 6px;
         }
 
         .vibrant-btn {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            transition: all 0.3s ease;
         }
         
+        .vibrant-btn:active {
+            transform: scale(0.98);
+        }
+
         .loader {
             border: 3px solid #f3f3f3;
             border-top: 3px solid #3b82f6;
             border-radius: 50%;
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        /* Profile image dynamic sizing */
         .profile-img {
-            width: 150px;
+            width: 180px; /* Lighter/Bigger size */
             height: auto;
             object-fit: contain;
-            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
+            filter: drop-shadow(0 15px 25px rgba(0,0,0,0.4));
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .profile-img:hover {
+            transform: scale(1.05) rotate(2deg);
         }
 
         .online-dot {
-            height: 10px;
-            width: 10px;
+            height: 12px;
+            width: 12px;
             background-color: #ef4444;
             border-radius: 50%;
             display: inline-block;
             animation: pulse 1.5s infinite;
-            margin-right: 5px;
+            margin-right: 8px;
         }
 
         @keyframes pulse {
             0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            70% { transform: scale(1); box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .header-gradient {
+            background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
         }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
     <!-- Login Screen -->
-    <div id="login-screen" class="fixed inset-0 z-[100] bg-slate-900 flex items-center justify-center p-6">
-        <div class="glass-card w-full max-w-md p-8 text-center space-y-6">
-            <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-xl">
-                <i class="fas fa-user-lock text-white text-2xl"></i>
+    <div id="login-screen" class="fixed inset-0 z-[100] bg-slate-950 flex items-center justify-center p-6">
+        <div class="glass-card w-full max-w-md p-10 text-center space-y-8 shadow-2xl">
+            <div class="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center mx-auto shadow-2xl rotate-3">
+                <i class="fas fa-user-lock text-white text-3xl"></i>
             </div>
             <div>
-                <h2 class="text-2xl font-bold text-slate-800">පිවිසීමේ පුවරුව</h2>
-                <p class="text-slate-500 text-sm">කරුණාකර ඔබගේ විස්තර ඇතුළත් කරන්න</p>
+                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">පිවිසීමේ පුවරුව</h2>
+                <p class="text-slate-500 mt-2 text-sm font-medium">Smart LMS පද්ධතියට ආරක්ෂිතව ඇතුළු වන්න</p>
             </div>
             <div class="space-y-4">
-                <input type="text" id="login-class-id" placeholder="Class ID (e.g. MG-1234)" class="w-full p-4 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition">
-                <input type="password" id="login-password" placeholder="Password" class="w-full p-4 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition">
-                <button id="login-btn" class="w-full vibrant-btn text-white p-4 rounded-xl font-bold shadow-lg">පද්ධතියට ඇතුළු වන්න</button>
+                <div class="relative">
+                    <i class="fas fa-id-card absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="login-class-id" placeholder="Class ID (MG-XXXX)" class="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition font-medium">
+                </div>
+                <div class="relative">
+                    <i class="fas fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="password" id="login-password" placeholder="Password" class="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition font-medium">
+                </div>
+                <button id="login-btn" class="w-full vibrant-btn text-white py-4 rounded-2xl font-bold shadow-xl text-lg mt-4">පද්ධතියට ඇතුළු වන්න</button>
             </div>
-            <p id="login-error" class="text-red-500 text-xs hidden font-bold">Class ID හෝ Password වැරදියි!</p>
+            <p id="login-error" class="text-red-500 text-sm hidden font-bold bg-red-50 py-2 rounded-lg">ID හෝ මුරපදය වැරදියි!</p>
         </div>
     </div>
 
     <!-- Navigation -->
-    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b hidden" id="nav-bar">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg">
-                    <i class="fas fa-graduation-cap text-white text-sm"></i>
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-slate-200 hidden" id="nav-bar">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <i class="fas fa-graduation-cap text-white text-lg"></i>
                 </div>
-                <h1 class="font-bold text-lg text-slate-800 tracking-tight">Smart LMS</h1>
+                <h1 class="font-bold text-xl text-slate-900 tracking-tight">Smart LMS</h1>
             </div>
-            <div id="student-display-name" class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">...</div>
+            <div id="student-display-name" class="text-xs font-bold text-blue-700 bg-blue-50 px-4 py-2 rounded-full border border-blue-100 uppercase tracking-wider">...</div>
         </div>
     </nav>
 
     <div id="main-dashboard-content" class="p-4 md:p-8 hidden">
-        <main class="max-w-7xl mx-auto space-y-8">
-            <header class="bg-slate-900 rounded-[2.5rem] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl flex flex-col md:flex-row items-center gap-8 border border-white/10">
-                <div class="flex-shrink-0 relative z-10">
-                    <img src="mg-removebg-preview.png" alt="Malinda Galappaththi" class="profile-img" onerror="this.style.display='none'">
+        <main class="max-w-7xl mx-auto space-y-10">
+            <!-- Header Section -->
+            <header class="header-gradient rounded-[3rem] p-8 md:p-14 text-white relative overflow-hidden shadow-2xl flex flex-col md:flex-row items-center gap-10 border border-white/5">
+                <div class="flex-shrink-0 relative z-10 group">
+                    <div class="absolute -inset-4 bg-blue-500/20 rounded-full blur-2xl group-hover:bg-blue-500/30 transition duration-500"></div>
+                    <img src="mg-removebg-preview.png" alt="Malinda Galappaththi" class="profile-img relative z-10" onerror="this.style.display='none'">
                 </div>
-                <div class="relative z-10 text-center md:text-left">
-                    <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight mb-2">මාලින්ද ගලප්පත්ති</h2>
-                    <p class="text-blue-400 font-semibold text-lg md:text-xl mb-4">Physics Expert</p>
-                    <p class="text-slate-400 text-sm md:text-base max-w-lg">ඔබේ පාඩම් මාලා සියල්ල මෙතැනින් ආරක්ෂිතව නරඹන්න. ඉහළම තාක්ෂණික ආරක්ෂාවකින් යුක්තයි.</p>
+                <div class="relative z-10 text-center md:text-left flex-1">
+                    <span class="bg-blue-500/20 text-blue-300 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-4 inline-block">Welcome Back</span>
+                    <h2 class="text-4xl md:text-6xl font-black tracking-tight mb-3">මාලින්ද ගලප්පත්ති</h2>
+                    <p class="text-blue-400 font-bold text-xl md:text-2xl mb-6">Physics Expert</p>
+                    <p class="text-slate-400 text-sm md:text-lg max-w-xl leading-relaxed">ඔබේ විෂය නිර්දේශයට අදාළ සියලුම පාඩම් මාලා සහ සජීවී පන්ති මෙතැනින් ආරක්ෂිතව නරඹන්න.</p>
                 </div>
-                <i class="fas fa-shield-alt absolute right-[-20px] bottom-[-20px] text-[150px] text-white/5"></i>
+                <!-- Background Decoration -->
+                <i class="fas fa-atom absolute right-[-40px] top-[-40px] text-[200px] text-white/5 rotate-12"></i>
+                <i class="fas fa-shield-alt absolute left-[10%] bottom-[-30px] text-[100px] text-white/5 -rotate-12"></i>
             </header>
 
             <!-- Online Class Section -->
             <section id="online-classes-section">
-                <h3 class="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
-                    <span class="online-dot"></span> Online පන්ති
-                </h3>
-                <div id="online-classes-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <!-- Live Classes will be injected here -->
-                    <div class="glass-card p-6 border-l-4 border-red-500 shadow-sm flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-black text-slate-900 flex items-center gap-3">
+                        <span class="online-dot"></span> Online පන්ති
+                    </h3>
+                </div>
+                <div id="online-classes-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="glass-card p-8 border-l-8 border-red-500 shadow-sm flex flex-col justify-between">
                         <div>
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-bold text-slate-800 text-base">Physics Live Class 01</h4>
-                                <span class="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-1 rounded">LIVE NOW</span>
+                            <div class="flex justify-between items-start mb-4">
+                                <h4 class="font-bold text-slate-900 text-lg">Physics Live Class</h4>
+                                <span class="bg-red-500 text-white text-[10px] font-black px-3 py-1 rounded-full animate-pulse">LIVE</span>
                             </div>
-                            <p class="text-slate-500 text-xs mb-4">සජීවී පන්තිය ආරම්භ වී ඇත. සම්බන්ධ වීමට පහත බොත්තම භාවිතා කරන්න.</p>
+                            <p class="text-slate-500 text-sm mb-6 leading-relaxed">සජීවී පන්තිය දැන් පැවැත්වේ. සම්බන්ධ වීමට පහත බොත්තම භාවිතා කරන්න.</p>
                         </div>
-                        <a href="#" class="w-full bg-red-600 text-white py-3 rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-2 hover:bg-red-700 transition">
+                        <a href="#" class="w-full bg-red-600 text-white py-4 rounded-2xl text-sm font-bold shadow-lg flex items-center justify-center gap-2 hover:bg-red-700 transition">
                             <i class="fas fa-video"></i> පන්තියට සම්බන්ධ වන්න
                         </a>
                     </div>
@@ -197,43 +231,47 @@
             </section>
 
             <section>
-                <h3 class="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
-                    <i class="fas fa-layer-group text-blue-500"></i> පවතින පාඩම් මාලා
+                <h3 class="text-xl font-black text-slate-900 mb-6 flex items-center gap-3">
+                    <i class="fas fa-layer-group text-blue-600"></i> පවතින පාඩම් මාලා
                 </h3>
-                <div id="student-packs-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div id="student-packs-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div class="col-span-full flex justify-center py-10"><div class="loader"></div></div>
                 </div>
             </section>
 
             <!-- Morning Booster Section -->
             <section id="morning-booster-section">
-                <h3 class="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
-                    <i class="fas fa-sun text-orange-500"></i> Morning Booster
+                <h3 class="text-xl font-black text-slate-900 mb-6 flex items-center gap-3">
+                    <i class="fas fa-bolt text-orange-500"></i> Morning Booster
                 </h3>
-                <div id="morning-booster-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <!-- Morning Booster content will be injected here -->
+                <div id="morning-booster-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div class="col-span-full flex justify-center py-4 text-slate-400 text-sm italic">තවම අන්තර්ගතයන් ඇතුළත් කර නොමැත.</div>
                 </div>
             </section>
 
             <!-- Footer Section -->
-            <footer class="text-center py-10">
-                <p class="text-slate-400 text-sm font-medium">Powered by Nudara Concepts</p>
+            <footer class="text-center py-14 border-t border-slate-200 mt-20">
+                <div class="flex justify-center gap-4 mb-4 text-slate-300">
+                    <i class="fas fa-lock"></i>
+                    <i class="fas fa-shield-alt"></i>
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <p class="text-slate-400 text-xs font-bold tracking-widest uppercase">Powered by Nudara Concepts &copy; 2026</p>
             </footer>
         </main>
     </div>
 
     <!-- Lessons View -->
     <div id="lessons-page-view" class="hidden min-h-screen bg-slate-50 p-4 md:p-8">
-        <div class="max-w-4xl mx-auto">
-            <button onclick="closeLessons()" class="mb-6 flex items-center gap-2 text-blue-600 font-bold text-sm">
-                <i class="fas fa-chevron-left"></i> ආපසු යන්න
+        <div class="max-w-5xl mx-auto">
+            <button onclick="closeLessons()" class="mb-8 flex items-center gap-3 text-blue-600 font-black text-sm bg-white px-5 py-3 rounded-2xl shadow-sm border border-slate-100 hover:bg-blue-50 transition">
+                <i class="fas fa-arrow-left"></i> ආපසු යන්න
             </button>
-            <h3 id="selected-pack-name" class="text-xl font-bold text-slate-800 mb-8 border-l-4 border-blue-600 pl-3"></h3>
-            <div id="lessons-grid" class="space-y-6 pb-20"></div>
+            <h3 id="selected-pack-name" class="text-2xl font-black text-slate-900 mb-10 border-l-8 border-blue-600 pl-4 tracking-tight"></h3>
+            <div id="lessons-grid" class="space-y-8 pb-24"></div>
             
-            <footer class="text-center py-6">
-                <p class="text-slate-400 text-xs">Powered by Nudara Concepts</p>
+            <footer class="text-center py-8">
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Nudara Concepts Security Verified</p>
             </footer>
         </div>
     </div>
@@ -281,7 +319,7 @@
             
             if(!classId || !password) return;
 
-            loginBtn.innerText = "කරුණාකර රැඳී සිටින්න...";
+            loginBtn.innerText = "සත්‍යාපනය වෙමින් පවතී...";
             loginBtn.disabled = true;
 
             if (classId === "1" && password === "2") {
@@ -437,16 +475,19 @@
                 if(data) {
                     Object.values(data).sort((a,b) => (a.createdAt || 0) - (b.createdAt || 0)).forEach(l => {
                         grid.innerHTML += `
-                            <div class="glass-card p-5 md:p-6 shadow-sm border border-slate-200">
-                                <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                                    <i class="fas fa-play-circle text-blue-600"></i> ${l.name}
+                            <div class="glass-card p-6 md:p-10 shadow-lg border border-slate-100">
+                                <h4 class="font-black text-slate-900 mb-6 flex items-center gap-3 text-lg">
+                                    <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-xs">
+                                        <i class="fas fa-play"></i>
+                                    </div>
+                                    ${l.name}
                                 </h4>
                                 ${generateSecurePlayer(l.youtubeUrl)}
-                                ${l.description ? `<p class="mt-4 text-slate-500 text-xs bg-slate-50 p-3 rounded-lg border border-dashed">${l.description}</p>` : ''}
+                                ${l.description ? `<div class="mt-6 text-slate-500 text-sm bg-slate-50 p-5 rounded-2xl border-l-4 border-blue-400 italic">${l.description}</div>` : ''}
                             </div>`;
                     });
                 } else {
-                    grid.innerHTML = '<div class="text-center py-20 text-slate-400">තවම පාඩම් එක් කර නොමැත.</div>';
+                    grid.innerHTML = '<div class="text-center py-24 text-slate-400 font-medium">තවම පාඩම් එක් කර නොමැත.</div>';
                 }
             });
         };
@@ -467,15 +508,15 @@
                     cont.innerHTML = '';
                     Object.keys(data).forEach(k => {
                         cont.innerHTML += `
-                            <div class="glass-card p-6 border-l-4 border-red-500 shadow-sm flex flex-col justify-between">
+                            <div class="glass-card p-8 border-l-8 border-red-500 shadow-sm flex flex-col justify-between">
                                 <div>
-                                    <div class="flex justify-between items-start mb-2">
-                                        <h4 class="font-bold text-slate-800 text-base">${data[k].name}</h4>
-                                        <span class="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-1 rounded">LIVE NOW</span>
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h4 class="font-bold text-slate-900 text-lg">${data[k].name}</h4>
+                                        <span class="bg-red-500 text-white text-[10px] font-black px-3 py-1 rounded-full animate-pulse">LIVE NOW</span>
                                     </div>
-                                    <p class="text-slate-500 text-xs mb-4">${data[k].description || 'පන්තියට සම්බන්ධ වීමට පහත බොත්තම ක්ලික් කරන්න.'}</p>
+                                    <p class="text-slate-500 text-sm mb-6 leading-relaxed">${data[k].description || 'පන්තියට සම්බන්ධ වීමට පහත බොත්තම ක්ලික් කරන්න.'}</p>
                                 </div>
-                                <a href="${data[k].link}" target="_blank" class="w-full bg-red-600 text-white py-3 rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-2 hover:bg-red-700 transition">
+                                <a href="${data[k].link}" target="_blank" class="w-full bg-red-600 text-white py-4 rounded-2xl text-sm font-bold shadow-lg flex items-center justify-center gap-2 hover:bg-red-700 transition">
                                     <i class="fas fa-video"></i> පන්තියට සම්බන්ධ වන්න
                                 </a>
                             </div>`;
@@ -493,12 +534,12 @@
                     cont.innerHTML = '';
                     Object.keys(data).forEach(k => {
                         cont.innerHTML += `
-                            <div class="glass-card p-6 shadow-sm flex flex-col justify-between border-b-4 border-orange-400">
+                            <div class="glass-card p-8 shadow-sm flex flex-col justify-between border-b-8 border-orange-500">
                                 <div>
-                                    <h4 class="font-bold text-slate-800 text-base mb-2">${data[k].name}</h4>
-                                    <p class="text-slate-500 text-xs mb-4">${data[k].description || ''}</p>
+                                    <h4 class="font-bold text-slate-900 text-lg mb-4">${data[k].name}</h4>
+                                    <p class="text-slate-500 text-sm mb-6 leading-relaxed">${data[k].description || ''}</p>
                                 </div>
-                                <button onclick="window.fetchLessons('${k}', '${data[k].name}')" class="w-full bg-orange-500 text-white py-3 rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-2">
+                                <button onclick="window.fetchLessons('${k}', '${data[k].name}')" class="w-full bg-orange-500 text-white py-4 rounded-2xl text-sm font-bold shadow-lg flex items-center justify-center gap-2 hover:bg-orange-600 transition">
                                     <i class="fas fa-bolt"></i> ආරම්භ කරන්න
                                 </button>
                             </div>`;
@@ -520,30 +561,30 @@
 
                         let btnHtml = '';
                         if(isUnlocked) {
-                            btnHtml = `<button onclick="window.fetchLessons('${k}', '${data[k].name}')" class="w-full vibrant-btn text-white py-3 rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-2">
+                            btnHtml = `<button onclick="window.fetchLessons('${k}', '${data[k].name}')" class="w-full vibrant-btn text-white py-4 rounded-2xl text-sm font-bold shadow-xl flex items-center justify-center gap-2">
                                         <i class="fas fa-play-circle"></i> වීඩියෝ නරඹන්න
                                        </button>`;
                         } else if(isRequested) {
-                            btnHtml = `<button disabled class="w-full bg-slate-200 text-slate-500 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-not-allowed">
-                                        <i class="fas fa-clock"></i> අනුමැතිය ලැබෙන තෙක්...
+                            btnHtml = `<button disabled class="w-full bg-slate-200 text-slate-500 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 cursor-not-allowed">
+                                        <i class="fas fa-hourglass-half"></i> අනුමැතිය ලැබෙන තෙක්...
                                        </button>`;
                         } else {
-                            btnHtml = `<button onclick="window.requestPack('${k}', '${data[k].name}')" class="w-full bg-slate-800 text-white py-3 rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-2">
+                            btnHtml = `<button onclick="window.requestPack('${k}', '${data[k].name}')" class="w-full bg-slate-900 text-white py-4 rounded-2xl text-sm font-bold shadow-xl flex items-center justify-center gap-2 hover:bg-slate-800 transition">
                                         <i class="fas fa-lock"></i> Request Access
                                        </button>`;
                         }
 
                         cont.innerHTML += `
-                            <div class="glass-card p-6 shadow-sm flex flex-col justify-between border-b-4 ${isUnlocked ? 'border-green-500' : 'border-blue-600'}">
+                            <div class="glass-card p-8 shadow-sm flex flex-col justify-between border-b-8 ${isUnlocked ? 'border-green-500' : 'border-blue-600'}">
                                 <div>
-                                    <h4 class="font-bold text-slate-800 text-base mb-2">${data[k].name}</h4>
-                                    <p class="text-blue-600 font-black text-lg mb-6">LKR ${data[k].price}</p>
+                                    <h4 class="font-black text-slate-900 text-lg mb-3 tracking-tight">${data[k].name}</h4>
+                                    <p class="text-blue-700 font-black text-2xl mb-8">LKR ${data[k].price}</p>
                                 </div>
                                 ${btnHtml}
                             </div>`;
                     });
                 } else {
-                    cont.innerHTML = '<div class="col-span-full text-center py-20 text-slate-400 text-sm italic">තවම පාඩම් මාලා ඇතුළත් කර නොමැත.</div>';
+                    cont.innerHTML = '<div class="col-span-full text-center py-24 text-slate-400 text-sm font-medium italic">තවම පාඩම් මාලා ඇතුළත් කර නොමැත.</div>';
                 }
             });
         }
