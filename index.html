@@ -48,7 +48,7 @@
             border: none;
         }
 
-        /* ආරක්ෂක ස්ථරය - Pop-out බොත්තම ඇති දකුණු පස ඉහළ ප්‍රදේශය අවහිර කිරීම */
+        /* ආරක්ෂක ස්ථරය - මෙයට pointer-events: all යොදා සෘජු ස්පර්ශය වළක්වයි */
         .video-shield {
             position: absolute;
             top: 0;
@@ -57,8 +57,39 @@
             height: 100%;
             z-index: 10;
             background: rgba(0,0,0,0);
-            /* මෙහි pointer-events ඉවත් කර අවශ්‍ය කොටස් පමණක් අවහිර කිරීමට pointer-events: all යොදනු ලැබේ */
             pointer-events: all; 
+        }
+
+        /* Custom Playback Controls */
+        .playback-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 15px;
+            z-index: 30;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            pointer-events: all;
+        }
+
+        .playback-btn {
+            color: white;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: all 0.2s;
+        }
+
+        .playback-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.1);
         }
 
         /* Dynamic Watermark Style */
@@ -159,7 +190,6 @@
         const appId = "malinda-lms";
 
         let userIp = "Loading...";
-        // ශිෂ්‍යයාගේ IP එක ලබාගැනීම
         fetch('https://api.ipify.org?format=json')
             .then(res => res.json())
             .then(data => userIp = data.ip)
@@ -170,10 +200,8 @@
             const now = new Date();
             const timeStr = now.toLocaleTimeString();
             const dateStr = now.toLocaleDateString();
-            // මෙහි 'ශිෂ්‍යයා' වෙනුවට පද්ධතියට ලොග් වී ඇති නම පෙන්විය හැක
             element.innerText = `Student | IP: ${userIp} | ${dateStr} ${timeStr}`;
             
-            // ස්ථානය වෙනස් කිරීම (Random movement)
             const parent = element.parentElement;
             if(parent) {
                 const maxX = parent.offsetWidth - element.offsetWidth;
@@ -183,26 +211,55 @@
             }
         }
 
+        // පාලක බොත්තම් ක්‍රියාකරවීම (PostMessage API for IFrame)
+        window.videoAction = (id, action) => {
+            const iframe = document.getElementById(id);
+            if (!iframe) return;
+            
+            const container = iframe.parentElement;
+            
+            if (action === 'full') {
+                if (container.requestFullscreen) container.requestFullscreen();
+                else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+                return;
+            }
+
+            // Google Drive / Youtube පාලනය
+            const msg = action === 'play' ? '{"event":"command","func":"playVideo","args":""}' : 
+                        action === 'pause' ? '{"event":"command","func":"pauseVideo","args":""}' : '';
+            
+            if (msg) iframe.contentWindow.postMessage(msg, '*');
+
+            // සාමාන්‍ය වීඩියෝ ටැග් සඳහා
+            const videoTag = container.querySelector('video');
+            if (videoTag) {
+                if (action === 'play') videoTag.play();
+                else if (action === 'pause') videoTag.pause();
+                else if (action === 'forward') videoTag.currentTime += 10;
+                else if (action === 'rewind') videoTag.currentTime -= 10;
+            }
+        };
+
         function generateSecurePlayer(url) {
             if (!url) return '';
+            const uniqueId = "vid-" + Math.random().toString(36).substr(2, 9);
             let playerHtml = '';
             
             if (url.includes('drive.google.com')) {
                 let id = url.includes('/d/') ? url.split('/d/')[1].split('/')[0] : url.split('id=')[1].split('&')[0];
-                playerHtml = `<iframe src="https://drive.google.com/file/d/${id}/preview?rm=minimal" allow="autoplay" shadow="none"></iframe>`;
+                playerHtml = `<iframe id="${uniqueId}" src="https://drive.google.com/file/d/${id}/preview?rm=minimal&enablejsapi=1" allow="autoplay"></iframe>`;
             } else if (url.includes('youtube.com') || url.includes('youtu.be')) {
                 let id = url.split('v=')[1] || url.split('/').pop();
                 if(id.includes('&')) id = id.split('&')[0];
-                playerHtml = `<iframe src="https://www.youtube.com/embed/${id}?modestbranding=1&rel=0&iv_load_policy=3" allowfullscreen></iframe>`;
+                playerHtml = `<iframe id="${uniqueId}" src="https://www.youtube.com/embed/${id}?enablejsapi=1&modestbranding=1&rel=0" allowfullscreen></iframe>`;
             } else {
-                playerHtml = `<video controlsList="nodownload" oncontextmenu="return false;" controls shadow="none">
+                playerHtml = `<video id="${uniqueId}" controlsList="nodownload" oncontextmenu="return false;">
                                 <source src="${url}" type="video/mp4">
                               </video>`;
             }
 
             const watermarkId = "wm-" + Math.random().toString(36).substr(2, 9);
             
-            // Watermark එකක් සමඟ Container එක සෑදීම
             setTimeout(() => {
                 const wm = document.getElementById(watermarkId);
                 if(wm) {
@@ -216,6 +273,13 @@
                     ${playerHtml}
                     <div class="video-shield"></div>
                     <div id="${watermarkId}" class="dynamic-watermark">Loading...</div>
+                    <div class="playback-controls">
+                        <button class="playback-btn" onclick="videoAction('${uniqueId}', 'rewind')"><i class="fas fa-backward"></i></button>
+                        <button class="playback-btn" onclick="videoAction('${uniqueId}', 'play')"><i class="fas fa-play"></i></button>
+                        <button class="playback-btn" onclick="videoAction('${uniqueId}', 'pause')"><i class="fas fa-pause"></i></button>
+                        <button class="playback-btn" onclick="videoAction('${uniqueId}', 'forward')"><i class="fas fa-forward"></i></button>
+                        <button class="playback-btn" onclick="videoAction('${uniqueId}', 'full')"><i class="fas fa-expand"></i></button>
+                    </div>
                 </div>`;
         }
 
