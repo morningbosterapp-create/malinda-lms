@@ -48,7 +48,7 @@
             border: none;
         }
 
-        /* ආරක්ෂක ස්ථරය - මෙයට pointer-events: all යොදා සෘජු ස්පර්ශය වළක්වයි */
+        /* ආරක්ෂක වැස්ම - මෙය මගින් Popup බොත්තම අවහිර කරයි */
         .video-shield {
             position: absolute;
             top: 0;
@@ -57,39 +57,37 @@
             height: 100%;
             z-index: 10;
             background: rgba(0,0,0,0);
-            pointer-events: all; 
         }
 
-        /* Custom Playback Controls */
+        /* පාලක බොත්තම් */
         .playback-controls {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
             padding: 15px;
             z-index: 30;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
-            pointer-events: all;
+            gap: 15px;
         }
 
         .playback-btn {
             color: white;
             background: rgba(255,255,255,0.1);
             border: none;
-            padding: 10px 15px;
-            border-radius: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
             cursor: pointer;
             backdrop-filter: blur(5px);
             transition: all 0.2s;
+            font-size: 14px;
         }
 
         .playback-btn:hover {
             background: rgba(255,255,255,0.2);
-            transform: scale(1.1);
         }
 
         /* Dynamic Watermark Style */
@@ -140,7 +138,6 @@
 
     <div id="main-dashboard-content" class="p-4 md:p-8">
         <main class="max-w-7xl mx-auto space-y-8">
-            <!-- Welcome Section -->
             <header class="bg-slate-900 rounded-[2rem] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl">
                 <div class="relative z-10">
                     <h2 class="text-2xl md:text-4xl font-bold">ආයුබෝවන්, ශිෂ්‍යයා!</h2>
@@ -149,7 +146,6 @@
                 <i class="fas fa-shield-alt absolute right-[-20px] bottom-[-20px] text-[120px] text-white/5"></i>
             </header>
 
-            <!-- Study Packs Section -->
             <section>
                 <h3 class="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
                     <i class="fas fa-layer-group text-blue-500"></i> පවතින පාඩම් මාලා
@@ -211,43 +207,22 @@
             }
         }
 
-        // පාලක බොත්තම් ක්‍රියාකරවීම (PostMessage API for IFrame)
         window.videoAction = (id, action) => {
             const iframe = document.getElementById(id);
             if (!iframe) return;
             
-            const container = iframe.parentElement;
-            
             if (action === 'full') {
+                const container = iframe.parentElement;
                 if (container.requestFullscreen) container.requestFullscreen();
                 else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
-                else if (container.mozRequestFullScreen) container.mozRequestFullScreen();
-                else if (container.msRequestFullscreen) container.msRequestFullscreen();
                 return;
             }
 
-            // Google Drive / Youtube පාලනය
-            // විධානය නිවැරදි JSON ආකෘතියෙන් යැවීම
-            let func = "";
-            if (action === 'play') func = "playVideo";
-            else if (action === 'pause') func = "pauseVideo";
-
-            if (func) {
-                iframe.contentWindow.postMessage(JSON.stringify({
-                    "event": "command",
-                    "func": func,
-                    "args": ""
-                }), "*");
-            }
-
-            // සෘජු HTML5 Video tag එකක් නම් (Direct MP4)
-            const videoTag = container.querySelector('video');
-            if (videoTag) {
-                if (action === 'play') videoTag.play();
-                else if (action === 'pause') videoTag.pause();
-                else if (action === 'forward') videoTag.currentTime += 10;
-                else if (action === 'rewind') videoTag.currentTime -= 10;
-            }
+            // Google Drive interaction via postMessage
+            try {
+                const cmd = action === 'play' ? 'playVideo' : 'pauseVideo';
+                iframe.contentWindow.postMessage(JSON.stringify({"event":"command","func":cmd,"args":""}), "*");
+            } catch(e) {}
         };
 
         function generateSecurePlayer(url) {
@@ -257,16 +232,13 @@
             
             if (url.includes('drive.google.com')) {
                 let id = url.includes('/d/') ? url.split('/d/')[1].split('/')[0] : url.split('id=')[1].split('&')[0];
-                // enablejsapi=1 සහ origin එක් කිරීම අනිවාර්යයි
-                const origin = window.location.origin;
-                playerHtml = `<iframe id="${uniqueId}" src="https://drive.google.com/file/d/${id}/preview?rm=minimal&enablejsapi=1&origin=${origin}" allow="autoplay"></iframe>`;
+                playerHtml = `<iframe id="${uniqueId}" src="https://drive.google.com/file/d/${id}/preview?enablejsapi=1" allow="autoplay"></iframe>`;
             } else if (url.includes('youtube.com') || url.includes('youtu.be')) {
                 let id = url.split('v=')[1] || url.split('/').pop();
                 if(id.includes('&')) id = id.split('&')[0];
-                const origin = window.location.origin;
-                playerHtml = `<iframe id="${uniqueId}" src="https://www.youtube.com/embed/${id}?enablejsapi=1&modestbranding=1&rel=0&origin=${origin}" allowfullscreen></iframe>`;
+                playerHtml = `<iframe id="${uniqueId}" src="https://www.youtube.com/embed/${id}?enablejsapi=1&modestbranding=1&rel=0" allowfullscreen></iframe>`;
             } else {
-                playerHtml = `<video id="${uniqueId}" controlsList="nodownload" oncontextmenu="return false;">
+                playerHtml = `<video id="${uniqueId}" controlsList="nodownload">
                                 <source src="${url}" type="video/mp4">
                               </video>`;
             }
@@ -287,11 +259,9 @@
                     <div class="video-shield"></div>
                     <div id="${watermarkId}" class="dynamic-watermark">Loading...</div>
                     <div class="playback-controls">
-                        <button class="playback-btn" onclick="videoAction('${uniqueId}', 'rewind')"><i class="fas fa-backward"></i></button>
-                        <button class="playback-btn" onclick="videoAction('${uniqueId}', 'play')"><i class="fas fa-play"></i></button>
-                        <button class="playback-btn" onclick="videoAction('${uniqueId}', 'pause')"><i class="fas fa-pause"></i></button>
-                        <button class="playback-btn" onclick="videoAction('${uniqueId}', 'forward')"><i class="fas fa-forward"></i></button>
-                        <button class="playback-btn" onclick="videoAction('${uniqueId}', 'full')"><i class="fas fa-expand"></i></button>
+                        <button class="playback-btn" onclick="videoAction('${uniqueId}', 'play')"><i class="fas fa-play mr-1"></i> Play</button>
+                        <button class="playback-btn" onclick="videoAction('${uniqueId}', 'pause')"><i class="fas fa-pause mr-1"></i> Pause</button>
+                        <button class="playback-btn" onclick="videoAction('${uniqueId}', 'full')"><i class="fas fa-expand mr-1"></i> Full Screen</button>
                     </div>
                 </div>`;
         }
@@ -347,13 +317,6 @@
                             </button>
                         </div>`;
                 });
-            }
-        });
-
-        document.addEventListener('keydown', e => {
-            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) || (e.ctrlKey && e.key === 'u')) {
-                e.preventDefault();
-                return false;
             }
         });
     </script>
