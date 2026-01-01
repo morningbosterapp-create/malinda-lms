@@ -44,6 +44,22 @@
         .vibrant-btn:hover {
             transform: scale(1.05);
         }
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 16px;
+            background: #000;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
     </style>
 </head>
 <body class="min-h-screen pb-12">
@@ -120,7 +136,8 @@
                     </div>
                     <span class="bg-blue-100 text-blue-600 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest">Active Pack</span>
                 </div>
-                <div id="lessons-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                <!-- Lesson Grid where videos will be shown -->
+                <div id="lessons-grid" class="grid grid-cols-1 lg:grid-cols-1 gap-6"></div>
             </section>
         </main>
     </div>
@@ -143,16 +160,20 @@
         const db = getDatabase(app); 
         const appId = "malinda-lms";
 
-        // Handle Lessons closing (Return to Dashboard)
+        // Extract YouTube Video ID from various URL formats
+        function getYouTubeId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
         window.closeLessons = () => {
             document.getElementById('lessons-page-view').classList.add('hidden');
             document.getElementById('main-dashboard-content').classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
-        // Fetch Lessons for a specific pack and HIDE dashboard
         window.fetchLessons = (packId, packName) => {
-            // UI Switch
             document.getElementById('main-dashboard-content').classList.add('hidden');
             document.getElementById('lessons-page-view').classList.remove('hidden');
             document.getElementById('selected-pack-name').innerText = packName;
@@ -167,15 +188,24 @@
                 if(data) {
                     Object.keys(data).forEach(k => {
                         const l = data[k];
+                        const videoId = getYouTubeId(l.youtubeUrl);
+                        
+                        // Modified UI: Show video inside an iframe directly to hide the source link
                         lessonsGrid.innerHTML += `
-                            <div class="glass-card p-6 flex items-start gap-4 hover:shadow-md transition group">
-                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 flex-shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                    <i class="fas fa-play"></i>
-                                </div>
-                                <div>
-                                    <h5 class="font-bold text-slate-800">${l.name}</h5>
-                                    <p class="text-sm text-slate-500 mt-1">${l.description || 'මෙම පාඩම නැරඹීමට පහත බටන් එක භාවිතා කරන්න.'}</p>
-                                    <a href="${l.youtubeUrl}" target="_blank" class="inline-block mt-3 text-blue-600 text-xs font-bold hover:underline">WATCH LESSON <i class="fas fa-external-link-alt ml-1"></i></a>
+                            <div class="glass-card overflow-hidden shadow-lg border border-slate-200">
+                                <div class="p-6">
+                                    <h5 class="font-bold text-slate-800 text-xl mb-2">${l.name}</h5>
+                                    <p class="text-sm text-slate-500 mb-6">${l.description || 'මෙම පාඩම ඉහළ ඇති වීඩියෝවෙන් නරඹන්න.'}</p>
+                                    
+                                    ${videoId ? `
+                                        <div class="video-container">
+                                            <iframe 
+                                                src="https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&showinfo=0" 
+                                                allowfullscreen
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+                                            </iframe>
+                                        </div>
+                                    ` : `<div class="p-8 bg-slate-100 rounded-xl text-center text-slate-400">වීඩියෝව ලබාගත නොහැක.</div>`}
                                 </div>
                             </div>`;
                     });
@@ -189,7 +219,6 @@
             });
         };
 
-        // Real-time listener for Live Classes
         onValue(ref(db, `artifacts/${appId}/public/data/live_classes`), (snap) => {
             const data = snap.val(); 
             const cont = document.getElementById('student-live-list'); 
@@ -220,7 +249,6 @@
             }
         });
 
-        // Real-time listener for Study Packs
         onValue(ref(db, `artifacts/${appId}/public/data/study_packs`), (snap) => {
             const data = snap.val(); 
             const cont = document.getElementById('student-packs-list'); 
