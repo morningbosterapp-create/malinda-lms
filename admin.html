@@ -44,16 +44,16 @@
         </div>
         
         <nav class="flex-1 p-4 space-y-2 mt-4">
-            <button onclick="showSection('analytics')" class="nav-item w-full flex items-center p-3 rounded-lg bg-blue-600 hover:bg-blue-700 transition duration-200 text-left">
+            <button onclick="showSection('analytics', event)" class="nav-item w-full flex items-center p-3 rounded-lg bg-blue-600 hover:bg-blue-700 transition duration-200 text-left">
                 <i class="fas fa-chart-line w-8"></i> දත්ත විශ්ලේෂණ (Analytics)
             </button>
-            <button onclick="showSection('classes')" class="nav-item w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition duration-200 text-left">
+            <button onclick="showSection('classes', event)" class="nav-item w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition duration-200 text-left">
                 <i class="fas fa-video w-8"></i> ඔන්ලයින් පන්ති (Classes)
             </button>
-            <button onclick="showSection('studypacks')" class="nav-item w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition duration-200 text-left">
+            <button onclick="showSection('studypacks', event)" class="nav-item w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition duration-200 text-left">
                 <i class="fas fa-book-open w-8"></i> පාඩම් මාලා (Study Packs)
             </button>
-            <button onclick="showSection('students')" class="nav-item w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition duration-200 text-left">
+            <button onclick="showSection('students', event)" class="nav-item w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition duration-200 text-left">
                 <i class="fas fa-users w-8"></i> සිසුන් (Students)
             </button>
         </nav>
@@ -297,7 +297,7 @@
 
     <script>
         // Simple function to switch tabs
-        function showSection(sectionId) {
+        function showSection(sectionId, event) {
             // Hide all sections
             document.getElementById('section-analytics').classList.add('hidden');
             document.getElementById('section-classes').classList.add('hidden');
@@ -323,9 +323,11 @@
                 item.classList.add('hover:bg-slate-800');
             });
             
-            // Highlight active button (This logic finds the button clicked - simplified for this demo)
-            event.currentTarget.classList.remove('hover:bg-slate-800');
-            event.currentTarget.classList.add('bg-blue-600');
+            // Highlight active button
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.remove('hover:bg-slate-800');
+                event.currentTarget.classList.add('bg-blue-600');
+            }
         }
     </script>
 
