@@ -62,7 +62,7 @@
             <div id="section-students" class="hidden space-y-6">
                 <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
                     <h3 class="text-lg font-bold mb-6 text-slate-800">නව ශිෂ්‍යයෙකු ලියාපදිංචි කරන්න</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 md:flex-row gap-4">
                         <input type="text" id="student-name" placeholder="ශිෂ්‍යයාගේ නම" class="p-3 bg-slate-50 border rounded-xl outline-none">
                         <input type="text" id="student-id-input" placeholder="ID අංකය / නිකුත් කළ අංකය" class="p-3 bg-slate-50 border rounded-xl outline-none">
                         <input type="text" id="student-school" placeholder="පාසල" class="p-3 bg-slate-50 border rounded-xl outline-none">
@@ -76,7 +76,7 @@
                         <thead>
                             <tr class="text-slate-400 text-[11px] uppercase border-b">
                                 <th class="pb-3">ශිෂ්‍ය නම</th>
-                                <th class="pb-3">School / ID</th>
+                                <th class="pb-3">School / ID / Password</th>
                                 <th class="pb-3">ගෙවීම් සහ ඉල්ලීම්</th>
                                 <th class="pb-3">Action</th>
                             </tr>
@@ -238,7 +238,11 @@
                 table.innerHTML += `
                 <tr class="border-b hover:bg-slate-50 transition">
                     <td class="py-4 font-bold text-slate-800">${s.name}</td>
-                    <td class="py-4 text-slate-500 text-xs">${s.school}<br><span class="font-mono text-blue-600">${s.classId}</span></td>
+                    <td class="py-4 text-slate-500 text-xs">
+                        ${s.school} <br> 
+                        <span class="font-mono text-blue-600">ID: ${s.classId}</span> <br>
+                        <span class="font-bold text-red-600">Pass: ${s.password}</span>
+                    </td>
                     <td class="py-4">
                         <button onclick="window.openPayments('${k}')" class="bg-blue-50 text-blue-600 px-4 py-1 rounded-full text-[10px] font-bold border border-blue-200">Payments & Requests</button>
                     </td>
