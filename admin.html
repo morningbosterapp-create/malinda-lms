@@ -4,34 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LMS Admin Dashboard</title>
-    
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
-    <!-- Google Fonts (Sinhala) -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;600;700&display=swap" rel="stylesheet">
-
     <style>
-        body {
-            font-family: 'Noto Sans Sinhala', sans-serif;
-        }
-        /* Custom Scrollbar for better PC experience */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1; 
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8; 
-        }
+        body { font-family: 'Noto Sans Sinhala', sans-serif; }
     </style>
 </head>
 <body class="bg-gray-50 h-screen overflow-hidden flex">
@@ -42,303 +19,140 @@
             <i class="fas fa-graduation-cap text-2xl text-blue-400"></i>
             <span class="text-xl font-bold">Smart LMS</span>
         </div>
-        
         <nav class="flex-1 p-4 space-y-2 mt-4">
-            <button onclick="showSection('analytics', event)" class="nav-item w-full flex items-center p-3 rounded-lg bg-blue-600 hover:bg-blue-700 transition duration-200 text-left">
-                <i class="fas fa-chart-line w-8"></i> දත්ත විශ්ලේෂණ (Analytics)
+            <button onclick="showSection('analytics', event)" class="nav-item w-full flex items-center p-3 rounded-lg bg-blue-600 hover:bg-blue-700 transition text-left">
+                <i class="fas fa-chart-line w-8"></i> දත්ත විශ්ලේෂණ
             </button>
-            <button onclick="showSection('classes', event)" class="nav-item w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition duration-200 text-left">
-                <i class="fas fa-video w-8"></i> ඔන්ලයින් පන්ති (Classes)
-            </button>
-            <button onclick="showSection('studypacks', event)" class="nav-item w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition duration-200 text-left">
+            <button onclick="showSection('studypacks', event)" class="nav-item w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition text-left">
                 <i class="fas fa-book-open w-8"></i> පාඩම් මාලා (Study Packs)
             </button>
-            <button onclick="showSection('students', event)" class="nav-item w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition duration-200 text-left">
-                <i class="fas fa-users w-8"></i> සිසුන් (Students)
+            <button onclick="showSection('liveclasses', event)" class="nav-item w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition text-left">
+                <i class="fas fa-broadcast-tower w-8"></i> Live Classes
+            </button>
+            <button onclick="showSection('recordings', event)" class="nav-item w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition text-left">
+                <i class="fas fa-play-circle w-8"></i> Recordings
             </button>
         </nav>
-
-        <div class="p-4 border-t border-slate-700">
-            <button class="flex items-center text-red-400 hover:text-red-300 transition">
-                <i class="fas fa-sign-out-alt mr-2"></i> ඉවත්වන්න
-            </button>
-        </div>
     </aside>
 
-    <!-- Main Content Area -->
     <main class="flex-1 flex flex-col h-screen overflow-hidden">
-        
-        <!-- Top Header -->
         <header class="bg-white shadow-sm h-16 flex justify-between items-center px-8">
-            <h2 id="page-title" class="text-xl font-bold text-gray-800">දත්ත විශ්ලේෂණ (Analytics Dashboard)</h2>
-            <div class="flex items-center gap-4">
-                <button class="p-2 text-gray-500 hover:text-blue-600"><i class="fas fa-bell"></i></button>
-                <div class="flex items-center gap-2">
-                    <div class="text-right">
-                        <p class="text-sm font-bold text-gray-700">Admin User</p>
-                        <p class="text-xs text-gray-500">Super Admin</p>
-                    </div>
-                    <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" class="w-10 h-10 rounded-full">
-                </div>
-            </div>
+            <h2 id="page-title" class="text-xl font-bold text-gray-800">දත්ත විශ්ලේෂණ</h2>
         </header>
 
-        <!-- Dynamic Content Container -->
         <div id="content-container" class="flex-1 overflow-y-auto p-8">
-            
-            <!-- SECTION 1: ANALYTICS (DEFAULT) -->
+            <!-- Analytics Section -->
             <div id="section-analytics" class="space-y-6">
-                <!-- Stat Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <p class="text-gray-500 text-sm">මුළු සිසුන් ගණන</p>
-                                <h3 class="text-2xl font-bold text-gray-800">1,250</h3>
-                            </div>
-                            <div class="p-3 bg-blue-100 rounded-full text-blue-600"><i class="fas fa-users text-xl"></i></div>
-                        </div>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <p class="text-gray-500 text-sm">මාසික ආදායම</p>
-                                <h3 class="text-2xl font-bold text-gray-800">LKR 450k</h3>
-                            </div>
-                            <div class="p-3 bg-green-100 rounded-full text-green-600"><i class="fas fa-wallet text-xl"></i></div>
-                        </div>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-purple-500">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <p class="text-gray-500 text-sm">Active Classes</p>
-                                <h3 class="text-2xl font-bold text-gray-800">12</h3>
-                            </div>
-                            <div class="p-3 bg-purple-100 rounded-full text-purple-600"><i class="fas fa-video text-xl"></i></div>
-                        </div>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-orange-500">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <p class="text-gray-500 text-sm">විකිණුන Study Packs</p>
-                                <h3 class="text-2xl font-bold text-gray-800">85</h3>
-                            </div>
-                            <div class="p-3 bg-orange-100 rounded-full text-orange-600"><i class="fas fa-book text-xl"></i></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recent Registrations Table -->
-                <div class="bg-white rounded-xl shadow-sm p-6">
-                    <h3 class="text-lg font-bold text-gray-700 mb-4">මෑතකදී ලියාපදිංචි වූ සිසුන්</h3>
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-gray-100 text-gray-600 text-sm uppercase">
-                                <th class="p-3 border-b">ID</th>
-                                <th class="p-3 border-b">නම</th>
-                                <th class="p-3 border-b">දිනය</th>
-                                <th class="p-3 border-b">තත්ත්වය</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-gray-700">
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="p-3">ST-001</td>
-                                <td class="p-3">කසුන් පෙරේරා</td>
-                                <td class="p-3">2026-01-01</td>
-                                <td class="p-3"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">Active</span></td>
-                            </tr>
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="p-3">ST-002</td>
-                                <td class="p-3">අමායා සිල්වා</td>
-                                <td class="p-3">2026-01-01</td>
-                                <td class="p-3"><span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">Pending</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
+                    <h3 class="text-2xl font-bold">සාදරයෙන් පිළිගනිමු!</h3>
+                    <p class="text-gray-600">පද්ධතියේ දත්ත මෙතැනින් පරීක්ෂා කළ හැක.</p>
                 </div>
             </div>
 
-            <!-- SECTION 2: ONLINE CLASSES (DATA ENTRY) -->
-            <div id="section-classes" class="hidden space-y-6">
-                <!-- Add New Class Form -->
-                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                        <i class="fas fa-plus-circle text-blue-600"></i> අලුත් පන්තියක් අරඹන්න (Add New Class)
-                    </h3>
-                    <form class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">පන්තියේ නම (Class Name)</label>
-                            <input type="text" placeholder="උදා: 2026 A/L Physics" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">විෂය (Subject)</label>
-                            <select class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                                <option>තෝරන්න...</option>
-                                <option>Physics</option>
-                                <option>Chemistry</option>
-                                <option>Combined Maths</option>
-                                <option>ICT</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">දිනය සහ වේලාව</label>
-                            <input type="datetime-local" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Zoom/Meeting Link</label>
-                            <input type="url" placeholder="https://zoom.us/j/..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">විස්තරය (Description)</label>
-                            <textarea rows="3" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
-                        </div>
-                        <div class="md:col-span-2 text-right">
-                            <button type="button" class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 mr-2">Clear</button>
-                            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-semibold shadow-lg">Save Class</button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Existing Classes List -->
-                <div class="bg-white rounded-xl shadow-sm p-6">
-                    <h3 class="text-lg font-bold text-gray-700 mb-4">පැවැත්වෙන පන්ති</h3>
-                    <div class="grid grid-cols-1 gap-4">
-                        <div class="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
-                            <div>
-                                <h4 class="font-bold text-gray-800">2026 A/L Physics - Unit 1</h4>
-                                <p class="text-sm text-gray-500"><i class="far fa-clock"></i> Today, 7:00 PM</p>
-                            </div>
-                            <div class="flex gap-2">
-                                <button class="p-2 text-blue-600 hover:bg-blue-50 rounded"><i class="fas fa-edit"></i> Edit</button>
-                                <button class="p-2 text-red-600 hover:bg-red-50 rounded"><i class="fas fa-trash"></i> Delete</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SECTION 3: STUDY PACKS -->
+            <!-- Study Packs Section -->
             <div id="section-studypacks" class="hidden space-y-6">
-                 <!-- Add Pack Form -->
                  <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">Study Pack එකක් එකතු කරන්න</h3>
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">අලුත් Study Pack එකක් එකතු කරන්න</h3>
                     <div class="flex flex-col md:flex-row gap-4">
-                        <input type="text" placeholder="Study Pack Name" class="flex-1 p-3 border border-gray-300 rounded-lg">
-                        <input type="number" placeholder="Price (LKR)" class="w-40 p-3 border border-gray-300 rounded-lg">
-                        <button class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 font-bold">Upload PDF/Video</button>
+                        <input type="text" id="pack-name" placeholder="Study Pack Name" class="flex-1 p-3 border rounded-lg outline-none">
+                        <input type="number" id="pack-price" placeholder="Price (LKR)" class="w-40 p-3 border rounded-lg outline-none">
+                        <button id="upload-pack-btn" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold transition">Add Pack</button>
                     </div>
                  </div>
-
-                 <!-- Packs Grid -->
-                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                     <div class="bg-white rounded-lg shadow border overflow-hidden">
-                         <div class="h-32 bg-gray-200 flex items-center justify-center text-gray-400">
-                             <i class="fas fa-image text-4xl"></i>
-                         </div>
-                         <div class="p-4">
-                             <h4 class="font-bold text-lg">Electronics Full Note</h4>
-                             <p class="text-green-600 font-bold mt-1">LKR 1,500.00</p>
-                             <div class="mt-4 flex justify-between">
-                                 <button class="text-blue-600 text-sm font-semibold">Edit Details</button>
-                                 <span class="text-xs bg-gray-100 px-2 py-1 rounded">250 Sold</span>
-                             </div>
-                         </div>
-                     </div>
+                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">පවතින Study Packs</h3>
+                    <div id="packs-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
                  </div>
             </div>
 
-            <!-- SECTION 4: STUDENTS -->
-            <div id="section-students" class="hidden space-y-6">
-                <div class="flex justify-between items-center mb-4">
-                    <div class="relative w-96">
-                        <input type="text" placeholder="Search students by Name or ID..." class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <i class="fas fa-search absolute left-3 top-3.5 text-gray-400"></i>
+            <!-- Live Classes Section -->
+            <div id="section-liveclasses" class="hidden space-y-6">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">නව Live Class එකක් එක් කරන්න</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <input type="text" id="live-name" placeholder="Class Name" class="p-3 border rounded-lg outline-none">
+                        <input type="datetime-local" id="live-time" class="p-3 border rounded-lg outline-none">
+                        <input type="text" id="live-link" placeholder="Zoom/Meet Link" class="p-3 border rounded-lg outline-none">
                     </div>
-                    <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"><i class="fas fa-user-plus mr-2"></i> Add Student</button>
+                    <button id="add-live-btn" class="mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-700 transition">
+                        Add Live Class
+                    </button>
                 </div>
-
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <table class="w-full text-left border-collapse">
-                        <thead class="bg-gray-100 border-b">
-                            <tr>
-                                <th class="p-4 text-sm font-semibold text-gray-600">Student Info</th>
-                                <th class="p-4 text-sm font-semibold text-gray-600">Email / Phone</th>
-                                <th class="p-4 text-sm font-semibold text-gray-600">Courses</th>
-                                <th class="p-4 text-sm font-semibold text-gray-600 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100">
-                            <tr class="hover:bg-gray-50">
-                                <td class="p-4 flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">K</div>
-                                    <div>
-                                        <p class="font-bold text-gray-800">කසුන් පෙරේරා</p>
-                                        <p class="text-xs text-gray-500">ID: ST-2026001</p>
-                                    </div>
-                                </td>
-                                <td class="p-4 text-sm text-gray-600">
-                                    kasun@gmail.com<br>077-1234567
-                                </td>
-                                <td class="p-4">
-                                    <span class="bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs border border-blue-200">Physics</span>
-                                </td>
-                                <td class="p-4 text-right">
-                                    <button class="text-gray-400 hover:text-blue-600 mx-1"><i class="fas fa-edit"></i></button>
-                                    <button class="text-gray-400 hover:text-red-600 mx-1"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">සැලසුම් කර ඇති Live පන්ති</h3>
+                    <div id="live-list" class="space-y-4"></div>
                 </div>
             </div>
 
+            <!-- Recordings Section -->
+            <div id="section-recordings" class="hidden space-y-6">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">නව Recording එකක් එක් කරන්න</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="rec-name" placeholder="Video Title" class="p-3 border rounded-lg outline-none">
+                        <input type="text" id="rec-link" placeholder="Video URL (YouTube/Drive)" class="p-3 border rounded-lg outline-none">
+                    </div>
+                    <button id="add-rec-btn" class="mt-4 bg-purple-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-purple-700 transition">
+                        Add Recording
+                    </button>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">පවතින Recordings</h3>
+                    <div id="rec-list" class="space-y-4"></div>
+                </div>
+            </div>
+
+            <!-- Lessons Section (Dynamic) -->
+            <div id="section-lessons" class="hidden space-y-6">
+                <button onclick="showSection('studypacks')" class="text-blue-600 hover:underline flex items-center gap-2 mb-4">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h3 id="current-pack-title" class="text-xl font-bold text-gray-800 mb-4">පාඩම් කළමනාකරණය</h3>
+                    <div class="grid grid-cols-1 gap-4">
+                        <input type="text" id="lesson-name" placeholder="Lesson Name" class="p-3 border rounded-lg outline-none">
+                        <textarea id="lesson-desc" placeholder="Lesson Description" class="p-3 border rounded-lg outline-none h-24"></textarea>
+                        <input type="text" id="lesson-url" placeholder="YouTube URL" class="p-3 border rounded-lg outline-none">
+                        <button id="add-lesson-btn" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold transition">Save Lesson</button>
+                    </div>
+                </div>
+                <div id="lessons-list" class="space-y-4 mt-4"></div>
+            </div>
         </div>
     </main>
 
     <script>
-        // Simple function to switch tabs
         function showSection(sectionId, event) {
-            // Hide all sections
             document.getElementById('section-analytics').classList.add('hidden');
-            document.getElementById('section-classes').classList.add('hidden');
             document.getElementById('section-studypacks').classList.add('hidden');
-            document.getElementById('section-students').classList.add('hidden');
+            document.getElementById('section-lessons').classList.add('hidden');
+            document.getElementById('section-liveclasses').classList.add('hidden');
+            document.getElementById('section-recordings').classList.add('hidden');
             
-            // Show the selected section
             document.getElementById('section-' + sectionId).classList.remove('hidden');
-
-            // Update Title
-            const titles = {
-                'analytics': 'දත්ත විශ්ලේෂණ (Analytics Dashboard)',
-                'classes': 'ඔන්ලයින් පන්ති කළමනාකරණය (Manage Classes)',
-                'studypacks': 'පාඩම් මාලා (Study Packs)',
-                'students': 'සිසුන්ගේ විස්තර (Student Details)'
-            };
-            document.getElementById('page-title').innerText = titles[sectionId];
-
-            // Reset nav styles (simple implementation)
-            const navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(item => {
-                item.classList.remove('bg-blue-600');
-                item.classList.add('hover:bg-slate-800');
-            });
             
-            // Highlight active button
-            if (event && event.currentTarget) {
-                event.currentTarget.classList.remove('hover:bg-slate-800');
-                event.currentTarget.classList.add('bg-blue-600');
+            const titles = { 
+                'analytics': 'දත්ත විශ්ලේෂණ', 
+                'studypacks': 'පාඩම් මාලා (Study Packs)', 
+                'liveclasses': 'Live Classes කළමනාකරණය',
+                'recordings': 'Recordings කළමනාකරණය'
+            };
+            if(titles[sectionId]) document.getElementById('page-title').innerText = titles[sectionId];
+
+            if(sectionId !== 'lessons') {
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('bg-blue-600');
+                    item.classList.add('hover:bg-slate-800');
+                });
+                if (event) event.currentTarget.classList.add('bg-blue-600');
             }
         }
     </script>
 
-    <!-- FIREBASE INTEGRATION -->
     <script type="module">
-        // Import the functions you need from the SDKs you need
-        // NOTE: Changed to CDN links for browser compatibility
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+        import { getDatabase, ref, push, set, serverTimestamp, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDUvR4OkKz0IQju7dRGju6uDnEYdeyVe3g",
             authDomain: "malinda-lms.firebaseapp.com",
@@ -346,15 +160,125 @@
             projectId: "malinda-lms",
             storageBucket: "malinda-lms.firebasestorage.app",
             messagingSenderId: "668911175736",
-            appId: "1:668911175736:web:01b3732c6313e696603ecd",
-            measurementId: "G-4EVQ9P57TH"
+            appId: "1:668911175736:web:01b3732c6313e696603ecd"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        
-        console.log("Firebase App Initialized for LMS Admin!");
+        const db = getDatabase(app);
+        const appId = "malinda-lms";
+
+        // --- STUDY PACKS ---
+        const packsListContainer = document.getElementById('packs-list');
+        onValue(ref(db, `artifacts/${appId}/public/data/study_packs`), (snapshot) => {
+            const data = snapshot.val();
+            packsListContainer.innerHTML = '';
+            if (data) {
+                Object.keys(data).forEach(key => {
+                    const pack = data[key];
+                    const div = document.createElement('div');
+                    div.className = "bg-white border p-4 rounded-lg shadow-sm flex flex-col justify-between";
+                    div.innerHTML = `<div><h4 class="font-bold">${pack.name}</h4><p class="text-blue-600 font-bold">LKR ${pack.price}</p></div>
+                        <button class="mt-4 bg-slate-800 text-white py-2 px-4 rounded hover:bg-slate-700 text-sm" onclick="window.manageLessons('${key}', '${pack.name}')">Manage Lessons</button>`;
+                    packsListContainer.appendChild(div);
+                });
+            }
+        });
+
+        document.getElementById('upload-pack-btn').addEventListener('click', async () => {
+            const name = document.getElementById('pack-name').value;
+            const price = document.getElementById('pack-price').value;
+            if(name && price) {
+                const newRef = push(ref(db, `artifacts/${appId}/public/data/study_packs`));
+                await set(newRef, { name, price: parseFloat(price), createdAt: serverTimestamp() });
+                document.getElementById('pack-name').value = ''; document.getElementById('pack-price').value = '';
+            }
+        });
+
+        // --- LIVE CLASSES ---
+        const liveListContainer = document.getElementById('live-list');
+        document.getElementById('add-live-btn').addEventListener('click', async () => {
+            const name = document.getElementById('live-name').value;
+            const time = document.getElementById('live-time').value;
+            const link = document.getElementById('live-link').value;
+            if(name && time && link) {
+                const newRef = push(ref(db, `artifacts/${appId}/public/data/live_classes`));
+                await set(newRef, { name, time, link, createdAt: serverTimestamp() });
+                document.getElementById('live-name').value = ''; document.getElementById('live-time').value = ''; document.getElementById('live-link').value = '';
+            }
+        });
+
+        onValue(ref(db, `artifacts/${appId}/public/data/live_classes`), (snapshot) => {
+            const data = snapshot.val();
+            liveListContainer.innerHTML = '';
+            if (data) {
+                Object.keys(data).forEach(key => {
+                    const cls = data[key];
+                    const div = document.createElement('div');
+                    div.className = "p-4 border rounded-lg bg-gray-50 flex justify-between items-center";
+                    div.innerHTML = `<div><h5 class="font-bold">${cls.name}</h5><p class="text-sm text-gray-600">${new Date(cls.time).toLocaleString()}</p></div>
+                        <a href="${cls.link}" target="_blank" class="bg-blue-100 text-blue-600 py-1 px-4 rounded-full text-sm font-bold">Join Class</a>`;
+                    liveListContainer.appendChild(div);
+                });
+            }
+        });
+
+        // --- RECORDINGS ---
+        const recListContainer = document.getElementById('rec-list');
+        document.getElementById('add-rec-btn').addEventListener('click', async () => {
+            const name = document.getElementById('rec-name').value;
+            const link = document.getElementById('rec-link').value;
+            if(name && link) {
+                const newRef = push(ref(db, `artifacts/${appId}/public/data/recordings`));
+                await set(newRef, { name, link, createdAt: serverTimestamp() });
+                document.getElementById('rec-name').value = ''; document.getElementById('rec-link').value = '';
+            }
+        });
+
+        onValue(ref(db, `artifacts/${appId}/public/data/recordings`), (snapshot) => {
+            const data = snapshot.val();
+            recListContainer.innerHTML = '';
+            if (data) {
+                Object.keys(data).forEach(key => {
+                    const rec = data[key];
+                    const div = document.createElement('div');
+                    div.className = "p-4 border rounded-lg bg-gray-50 flex justify-between items-center";
+                    div.innerHTML = `<div><h5 class="font-bold">${rec.name}</h5></div>
+                        <a href="${rec.link}" target="_blank" class="bg-purple-100 text-purple-600 py-1 px-4 rounded-full text-sm font-bold">Watch Now</a>`;
+                    recListContainer.appendChild(div);
+                });
+            }
+        });
+
+        // --- LESSONS ---
+        let activePackId = null;
+        window.manageLessons = (id, name) => {
+            activePackId = id;
+            document.getElementById('current-pack-title').innerText = `${name} - Lessons`;
+            showSection('lessons');
+            onValue(ref(db, `artifacts/${appId}/public/data/lessons/${id}`), (snapshot) => {
+                const data = snapshot.val();
+                const container = document.getElementById('lessons-list');
+                container.innerHTML = '';
+                if(data) {
+                    Object.keys(data).forEach(k => {
+                        const l = data[k];
+                        container.innerHTML += `<div class="p-4 border rounded-lg bg-white shadow-sm">
+                            <h5 class="font-bold">${l.name}</h5><p class="text-sm text-gray-500">${l.description}</p></div>`;
+                    });
+                }
+            });
+        };
+
+        document.getElementById('add-lesson-btn').addEventListener('click', async () => {
+            const name = document.getElementById('lesson-name').value;
+            const desc = document.getElementById('lesson-desc').value;
+            const url = document.getElementById('lesson-url').value;
+            if(name && url && activePackId) {
+                const newRef = push(ref(db, `artifacts/${appId}/public/data/lessons/${activePackId}`));
+                await set(newRef, { name, description: desc, youtubeUrl: url, createdAt: serverTimestamp() });
+                document.getElementById('lesson-name').value = ''; document.getElementById('lesson-desc').value = ''; document.getElementById('lesson-url').value = '';
+            }
+        });
     </script>
 </body>
 </html>
