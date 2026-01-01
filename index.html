@@ -59,6 +59,27 @@
             background: rgba(0,0,0,0);
         }
 
+        /* Full Screen Button */
+        .fs-overlay-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            z-index: 30;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            backdrop-filter: blur(4px);
+            transition: all 0.2s;
+        }
+        .fs-overlay-btn:hover {
+            background: rgba(0, 0, 0, 0.8);
+            transform: scale(1.05);
+        }
+
         /* Dynamic Watermark Style */
         .dynamic-watermark {
             position: absolute;
@@ -176,9 +197,22 @@
             }
         }
 
+        window.toggleFullScreen = (containerId) => {
+            const elem = document.getElementById(containerId);
+            if (!elem) return;
+            if (!document.fullscreenElement) {
+                if (elem.requestFullscreen) elem.requestFullscreen();
+                else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+                else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+        };
+
         function generateSecurePlayer(url) {
             if (!url) return '';
             const uniqueId = "vid-" + Math.random().toString(36).substr(2, 9);
+            const containerId = "cont-" + Math.random().toString(36).substr(2, 9);
             let playerHtml = '';
             
             if (url.includes('drive.google.com')) {
@@ -205,10 +239,13 @@
             }, 1000);
 
             return `
-                <div class="video-container">
+                <div id="${containerId}" class="video-container">
                     ${playerHtml}
                     <div class="video-shield-restricted"></div>
                     <div id="${watermarkId}" class="dynamic-watermark">Loading...</div>
+                    <button class="fs-overlay-btn" onclick="toggleFullScreen('${containerId}')">
+                        <i class="fas fa-expand"></i> Full Screen
+                    </button>
                 </div>`;
         }
 
