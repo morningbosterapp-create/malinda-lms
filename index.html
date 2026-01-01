@@ -48,7 +48,7 @@
             border: none;
         }
 
-        /* ආරක්ෂක ස්ථරය */
+        /* ආරක්ෂක ස්ථරය - Pop-out බොත්තම ඇති දකුණු පස ඉහළ ප්‍රදේශය අවහිර කිරීම */
         .video-shield {
             position: absolute;
             top: 0;
@@ -57,7 +57,8 @@
             height: 100%;
             z-index: 10;
             background: rgba(0,0,0,0);
-            pointer-events: none;
+            /* මෙහි pointer-events ඉවත් කර අවශ්‍ය කොටස් පමණක් අවහිර කිරීමට pointer-events: all යොදනු ලැබේ */
+            pointer-events: all; 
         }
 
         /* Dynamic Watermark Style */
