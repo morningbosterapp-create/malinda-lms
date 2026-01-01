@@ -227,13 +227,17 @@
             }
 
             // Google Drive / Youtube පාලනය
-            // API මගින් Play/Pause විධානයන් යැවීම
-            let command = "";
-            if (action === 'play') command = '{"event":"command","func":"playVideo","args":""}';
-            else if (action === 'pause') command = '{"event":"command","func":"pauseVideo","args":""}';
+            // විධානය නිවැරදි JSON ආකෘතියෙන් යැවීම
+            let func = "";
+            if (action === 'play') func = "playVideo";
+            else if (action === 'pause') func = "pauseVideo";
 
-            if (command) {
-                iframe.contentWindow.postMessage(command, '*');
+            if (func) {
+                iframe.contentWindow.postMessage(JSON.stringify({
+                    "event": "command",
+                    "func": func,
+                    "args": ""
+                }), "*");
             }
 
             // සෘජු HTML5 Video tag එකක් නම් (Direct MP4)
@@ -253,12 +257,14 @@
             
             if (url.includes('drive.google.com')) {
                 let id = url.includes('/d/') ? url.split('/d/')[1].split('/')[0] : url.split('id=')[1].split('&')[0];
-                // enablejsapi=1 එක් කළේ පිටතින් පාලනය කිරීමටයි
-                playerHtml = `<iframe id="${uniqueId}" src="https://drive.google.com/file/d/${id}/preview?rm=minimal&enablejsapi=1" allow="autoplay"></iframe>`;
+                // enablejsapi=1 සහ origin එක් කිරීම අනිවාර්යයි
+                const origin = window.location.origin;
+                playerHtml = `<iframe id="${uniqueId}" src="https://drive.google.com/file/d/${id}/preview?rm=minimal&enablejsapi=1&origin=${origin}" allow="autoplay"></iframe>`;
             } else if (url.includes('youtube.com') || url.includes('youtu.be')) {
                 let id = url.split('v=')[1] || url.split('/').pop();
                 if(id.includes('&')) id = id.split('&')[0];
-                playerHtml = `<iframe id="${uniqueId}" src="https://www.youtube.com/embed/${id}?enablejsapi=1&modestbranding=1&rel=0" allowfullscreen></iframe>`;
+                const origin = window.location.origin;
+                playerHtml = `<iframe id="${uniqueId}" src="https://www.youtube.com/embed/${id}?enablejsapi=1&modestbranding=1&rel=0&origin=${origin}" allowfullscreen></iframe>`;
             } else {
                 playerHtml = `<video id="${uniqueId}" controlsList="nodownload" oncontextmenu="return false;">
                                 <source src="${url}" type="video/mp4">
