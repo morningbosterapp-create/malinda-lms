@@ -8,7 +8,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* ආරක්ෂාව සඳහා පෙළ තේරීම සහ ටැප් කිරීම අවහිර කිරීම */
         * {
             -webkit-user-select: none;
             -moz-user-select: none;
@@ -48,18 +47,16 @@
             border: none;
         }
 
-        /* ආරක්ෂක වැස්ම - මෙය මගින් Popup බොත්තම ඇති දකුණු කෙළවර පමණක් අවහිර කරයි */
         .video-shield-restricted {
             position: absolute;
             top: 0;
             right: 0;
-            width: 100px; /* දකුණු කෙළවරේ popup බොත්තම ඇති ප්‍රදේශය */
+            width: 100px;
             height: 60px;
             z-index: 10;
             background: rgba(0,0,0,0);
         }
 
-        /* Full Screen Button */
         .fs-overlay-btn {
             position: absolute;
             bottom: 10px;
@@ -75,12 +72,7 @@
             backdrop-filter: blur(4px);
             transition: all 0.2s;
         }
-        .fs-overlay-btn:hover {
-            background: rgba(0, 0, 0, 0.8);
-            transform: scale(1.05);
-        }
 
-        /* Dynamic Watermark Style */
         .dynamic-watermark {
             position: absolute;
             z-index: 20;
@@ -110,7 +102,6 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* පින්තූරය සහ නම සඳහා මෝස්තර */
         .profile-img {
             width: 150px;
             height: auto;
@@ -121,8 +112,27 @@
 </head>
 <body oncontextmenu="return false;">
 
+    <!-- Login Screen -->
+    <div id="login-screen" class="fixed inset-0 z-[100] bg-slate-900 flex items-center justify-center p-6">
+        <div class="glass-card w-full max-w-md p-8 text-center space-y-6">
+            <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-xl">
+                <i class="fas fa-user-lock text-white text-2xl"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-slate-800">පිවිසීමේ පුවරුව</h2>
+                <p class="text-slate-500 text-sm">කරුණාකර ඔබගේ විස්තර ඇතුළත් කරන්න</p>
+            </div>
+            <div class="space-y-4">
+                <input type="text" id="login-class-id" placeholder="Class ID (e.g. MG-1234)" class="w-full p-4 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition">
+                <input type="password" id="login-password" placeholder="Password" class="w-full p-4 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition">
+                <button id="login-btn" class="w-full vibrant-btn text-white p-4 rounded-xl font-bold shadow-lg">පද්ධතියට ඇතුළු වන්න</button>
+            </div>
+            <p id="login-error" class="text-red-500 text-xs hidden font-bold">Class ID හෝ Password වැරදියි!</p>
+        </div>
+    </div>
+
     <!-- Navigation -->
-    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b">
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b hidden" id="nav-bar">
         <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center gap-2">
                 <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg">
@@ -130,13 +140,12 @@
                 </div>
                 <h1 class="font-bold text-lg text-slate-800 tracking-tight">Smart LMS</h1>
             </div>
-            <div id="auth-status" class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">SECURE MODE</div>
+            <div id="student-display-name" class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">...</div>
         </div>
     </nav>
 
-    <div id="main-dashboard-content" class="p-4 md:p-8">
+    <div id="main-dashboard-content" class="p-4 md:p-8 hidden">
         <main class="max-w-7xl mx-auto space-y-8">
-            <!-- Updated Header with Image and Name -->
             <header class="bg-slate-900 rounded-[2.5rem] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl flex flex-col md:flex-row items-center gap-8 border border-white/10">
                 <div class="flex-shrink-0 relative z-10">
                     <img src="mg-removebg-preview.png" alt="Malinda Galappaththi" class="profile-img" onerror="this.style.display='none'">
@@ -173,7 +182,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = { 
             apiKey: "AIzaSyDUvR4OkKz0IQju7dRGju6uDnEYdeyVe3g", 
@@ -189,17 +198,78 @@
         const appId = "malinda-lms";
 
         let userIp = "Loading...";
+        let currentUser = null;
+        let currentUserKey = null;
+
         fetch('https://api.ipify.org?format=json')
             .then(res => res.json())
             .then(data => userIp = data.ip)
             .catch(() => userIp = "Hidden IP");
 
+        // Auth Logic
+        const loginBtn = document.getElementById('login-btn');
+        const loginScreen = document.getElementById('login-screen');
+        const navBar = document.getElementById('nav-bar');
+        const mainContent = document.getElementById('main-dashboard-content');
+
+        const savedUser = localStorage.getItem('lms_user_key');
+        if (savedUser) {
+            checkUser(savedUser);
+        }
+
+        loginBtn.addEventListener('click', async () => {
+            const classId = document.getElementById('login-class-id').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+            
+            if(!classId || !password) return;
+
+            loginBtn.innerText = "කරුණාකර රැඳී සිටින්න...";
+            loginBtn.disabled = true;
+
+            const studentsRef = ref(db, `artifacts/${appId}/public/data/students`);
+            const snap = await get(studentsRef);
+            const students = snap.val();
+            
+            let found = false;
+            if(students) {
+                Object.keys(students).forEach(k => {
+                    if(students[k].classId === classId && students[k].password === password) {
+                        localStorage.setItem('lms_user_key', k);
+                        checkUser(k);
+                        found = true;
+                    }
+                });
+            }
+
+            if(!found) {
+                document.getElementById('login-error').classList.remove('hidden');
+                loginBtn.innerText = "පද්ධතියට ඇතුළු වන්න";
+                loginBtn.disabled = false;
+            }
+        });
+
+        function checkUser(key) {
+            onValue(ref(db, `artifacts/${appId}/public/data/students/${key}`), (snap) => {
+                const user = snap.val();
+                if(user) {
+                    currentUser = user;
+                    currentUserKey = key;
+                    loginScreen.classList.add('hidden');
+                    navBar.classList.remove('hidden');
+                    mainContent.classList.remove('hidden');
+                    document.getElementById('student-display-name').innerText = user.name.toUpperCase();
+                } else {
+                    localStorage.removeItem('lms_user_key');
+                    location.reload();
+                }
+            });
+        }
+
+        // Watermark & Player Logic
         function updateWatermark(element) {
-            if (!element) return;
+            if (!element || !currentUser) return;
             const now = new Date();
-            const timeStr = now.toLocaleTimeString();
-            const dateStr = now.toLocaleDateString();
-            element.innerText = `Student | IP: ${userIp} | ${dateStr} ${timeStr}`;
+            element.innerText = `${currentUser.name} | ID: ${currentUser.classId} | IP: ${userIp} | ${now.toLocaleTimeString()}`;
             
             const parent = element.parentElement;
             if(parent) {
@@ -216,7 +286,6 @@
             if (!document.fullscreenElement) {
                 if (elem.requestFullscreen) elem.requestFullscreen();
                 else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
-                else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
             } else {
                 if (document.exitFullscreen) document.exitFullscreen();
             }
@@ -236,13 +305,10 @@
                 if(id.includes('&')) id = id.split('&')[0];
                 playerHtml = `<iframe id="${uniqueId}" src="https://www.youtube.com/embed/${id}?modestbranding=1&rel=0" allowfullscreen></iframe>`;
             } else {
-                playerHtml = `<video id="${uniqueId}" controls controlsList="nodownload">
-                                <source src="${url}" type="video/mp4">
-                              </video>`;
+                playerHtml = `<video id="${uniqueId}" controls controlsList="nodownload"><source src="${url}" type="video/mp4"></video>`;
             }
 
             const watermarkId = "wm-" + Math.random().toString(36).substr(2, 9);
-            
             setTimeout(() => {
                 const wm = document.getElementById(watermarkId);
                 if(wm) {
@@ -260,6 +326,16 @@
                         <i class="fas fa-expand"></i> Full Screen
                     </button>
                 </div>`;
+        }
+
+        window.requestPack = (packId, packName) => {
+            if(confirm(`ඔබට ${packName} පාඩම් මාලාව සඳහා අවසර අවශ්‍යද?`)) {
+                set(ref(db, `artifacts/${appId}/public/data/students/${currentUserKey}/requests/${packId}`), {
+                    packName: packName,
+                    requestedAt: Date.now()
+                });
+                alert('ඔබේ ඉල්ලීම යොමු කළා. Admin අනුමත කළ පසු නැරඹිය හැකිය.');
+            }
         }
 
         window.fetchLessons = (packId, packName) => {
@@ -302,15 +378,31 @@
             cont.innerHTML = '';
             if(data) {
                 Object.keys(data).forEach(k => {
+                    const isUnlocked = currentUser && currentUser.unlockedPacks && currentUser.unlockedPacks[k];
+                    const isRequested = currentUser && currentUser.requests && currentUser.requests[k];
+
+                    let btnHtml = '';
+                    if(isUnlocked) {
+                        btnHtml = `<button onclick="window.fetchLessons('${k}', '${data[k].name}')" class="w-full vibrant-btn text-white py-3 rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-2">
+                                    <i class="fas fa-play-circle"></i> වීඩියෝ නරඹන්න
+                                   </button>`;
+                    } else if(isRequested) {
+                        btnHtml = `<button disabled class="w-full bg-slate-200 text-slate-500 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-not-allowed">
+                                    <i class="fas fa-clock"></i> අනුමැතිය ලැබෙන තෙක්...
+                                   </button>`;
+                    } else {
+                        btnHtml = `<button onclick="window.requestPack('${k}', '${data[k].name}')" class="w-full bg-slate-800 text-white py-3 rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-2">
+                                    <i class="fas fa-lock"></i> Request Access
+                                   </button>`;
+                    }
+
                     cont.innerHTML += `
-                        <div class="glass-card p-6 shadow-sm flex flex-col justify-between border-b-4 border-blue-600">
+                        <div class="glass-card p-6 shadow-sm flex flex-col justify-between border-b-4 ${isUnlocked ? 'border-green-500' : 'border-blue-600'}">
                             <div>
                                 <h4 class="font-bold text-slate-800 text-base mb-2">${data[k].name}</h4>
                                 <p class="text-blue-600 font-black text-lg mb-6">LKR ${data[k].price}</p>
                             </div>
-                            <button onclick="window.fetchLessons('${k}', '${data[k].name}')" class="w-full vibrant-btn text-white py-3 rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-2">
-                                <i class="fas fa-play-circle"></i> වීඩියෝ නරඹන්න
-                            </button>
+                            ${btnHtml}
                         </div>`;
                 });
             }
