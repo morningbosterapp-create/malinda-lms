@@ -3,282 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LMS Admin Dashboard</title>
+    <title>LMS Admin Dashboard - Secure Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Noto Sans Sinhala', sans-serif; }
+        body { font-family: 'Noto Sans Sinhala', sans-serif; background: #f8fafc; }
+        .sidebar-item:hover { background: #1e293b; }
+        .active-tab { background: #2563eb !important; color: white; }
+        .preview-box { background: #000; border-radius: 12px; position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; }
+        .preview-box iframe, .preview-box video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
     </style>
 </head>
-<body class="bg-gray-50 h-screen overflow-hidden flex">
+<body class="h-screen overflow-hidden flex">
 
     <!-- Sidebar -->
-    <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-xl">
-        <div class="p-6 border-b border-slate-700 flex items-center gap-3">
-            <i class="fas fa-graduation-cap text-2xl text-blue-400"></i>
-            <span class="text-xl font-bold">Smart LMS</span>
+    <aside class="w-72 bg-slate-900 text-slate-300 flex flex-col shadow-2xl">
+        <div class="p-6 border-b border-slate-800 flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <span class="text-xl font-bold text-white uppercase tracking-wider">Admin Pro</span>
         </div>
         <nav class="flex-1 p-4 space-y-2 mt-4">
-            <button onclick="showSection('analytics', event)" class="nav-item w-full flex items-center p-3 rounded-lg bg-blue-600 hover:bg-blue-700 transition text-left">
-                <i class="fas fa-chart-line w-8"></i> දත්ත විශ්ලේෂණ
+            <button onclick="showSection('studypacks')" id="tab-studypacks" class="sidebar-item w-full flex items-center p-3 rounded-xl transition text-left active-tab">
+                <i class="fas fa-layer-group w-8"></i> Study Packs
             </button>
-            <button onclick="showSection('studypacks', event)" class="nav-item w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition text-left">
-                <i class="fas fa-book-open w-8"></i> පාඩම් මාලා (Study Packs)
+            <button onclick="showSection('liveclasses')" id="tab-liveclasses" class="sidebar-item w-full flex items-center p-3 rounded-xl transition text-left">
+                <i class="fas fa-video w-8"></i> Live Classes
             </button>
-            <button onclick="showSection('liveclasses', event)" class="nav-item w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition text-left">
-                <i class="fas fa-broadcast-tower w-8"></i> Live Classes
-            </button>
-            <button onclick="showSection('recordings', event)" class="nav-item w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition text-left">
-                <i class="fas fa-play-circle w-8"></i> Recordings
-            </button>
+            <div class="pt-10 px-3">
+                <span class="text-[10px] font-bold text-slate-500 uppercase">වීඩියෝ උපදෙස්</span>
+                <div class="mt-3 p-3 bg-slate-800 rounded-lg text-[11px] leading-relaxed text-slate-400 italic">
+                    ඔබේ වීඩියෝව Google Drive හෝ YouTube වෙත අප්ලෝඩ් කර එම ලින්ක් එක මෙහි පේස්ට් කරන්න.
+                </div>
+            </div>
         </nav>
     </aside>
 
     <main class="flex-1 flex flex-col h-screen overflow-hidden">
-        <header class="bg-white shadow-sm h-16 flex justify-between items-center px-8">
-            <h2 id="page-title" class="text-xl font-bold text-gray-800">දත්ත විශ්ලේෂණ</h2>
+        <header class="bg-white shadow-sm h-16 flex items-center justify-between px-8 border-b">
+            <h2 id="page-title" class="text-xl font-bold text-slate-800">කළමනාකරණ පුවරුව</h2>
         </header>
 
         <div id="content-container" class="flex-1 overflow-y-auto p-8">
-            <!-- Analytics Section -->
-            <div id="section-analytics" class="space-y-6">
-                <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
-                    <h3 class="text-2xl font-bold">සාදරයෙන් පිළිගනිමු!</h3>
-                    <p class="text-gray-600">පද්ධතියේ දත්ත මෙතැනින් පරීක්ෂා කළ හැක.</p>
-                </div>
-            </div>
-
+            
             <!-- Study Packs Section -->
-            <div id="section-studypacks" class="hidden space-y-6">
-                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">අලුත් Study Pack එකක් එකතු කරන්න</h3>
+            <div id="section-studypacks" class="space-y-6">
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-lg font-bold mb-6 text-slate-800">නව Study Pack එකක් එක් කරන්න</h3>
                     <div class="flex flex-col md:flex-row gap-4">
-                        <input type="text" id="pack-name" placeholder="Study Pack Name" class="flex-1 p-3 border rounded-lg outline-none">
-                        <input type="number" id="pack-price" placeholder="Price (LKR)" class="w-40 p-3 border rounded-lg outline-none">
-                        <button id="upload-pack-btn" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold transition">Add Pack</button>
+                        <input type="text" id="pack-name" placeholder="පාඩම් මාලාවේ නම" class="flex-1 p-3 bg-slate-50 border rounded-xl outline-none">
+                        <input type="number" id="pack-price" placeholder="මිල" class="w-full md:w-32 p-3 bg-slate-50 border rounded-xl outline-none">
+                        <button id="add-pack-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg transition">එක් කරන්න</button>
                     </div>
-                 </div>
-                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">පවතින Study Packs</h3>
-                    <div id="packs-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-                 </div>
+                </div>
+                <div id="packs-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6"></div>
             </div>
 
-            <!-- Live Classes Section -->
-            <div id="section-liveclasses" class="hidden space-y-6">
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">නව Live Class එකක් එක් කරන්න</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <input type="text" id="live-name" placeholder="Class Name" class="p-3 border rounded-lg outline-none">
-                        <input type="datetime-local" id="live-time" class="p-3 border rounded-lg outline-none">
-                        <input type="text" id="live-link" placeholder="Zoom/Meet Link" class="p-3 border rounded-lg outline-none">
-                    </div>
-                    <button id="add-live-btn" class="mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-700 transition">
-                        Add Live Class
-                    </button>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">සැලසුම් කර ඇති Live පන්ති</h3>
-                    <div id="live-list" class="space-y-4"></div>
-                </div>
-            </div>
-
-            <!-- Recordings Section -->
-            <div id="section-recordings" class="hidden space-y-6">
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">නව Recording එකක් එක් කරන්න</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input type="text" id="rec-name" placeholder="Video Title" class="p-3 border rounded-lg outline-none">
-                        <input type="text" id="rec-link" placeholder="Video URL (YouTube/Drive)" class="p-3 border rounded-lg outline-none">
-                    </div>
-                    <button id="add-rec-btn" class="mt-4 bg-purple-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-purple-700 transition">
-                        Add Recording
-                    </button>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">පවතින Recordings</h3>
-                    <div id="rec-list" class="space-y-4"></div>
-                </div>
-            </div>
-
-            <!-- Lessons Section (Dynamic) -->
+            <!-- Lessons Section -->
             <div id="section-lessons" class="hidden space-y-6">
-                <button onclick="showSection('studypacks')" class="text-blue-600 hover:underline flex items-center gap-2 mb-4">
-                    <i class="fas fa-arrow-left"></i> Back
+                <button onclick="showSection('studypacks')" class="text-blue-600 font-bold flex items-center gap-2 mb-4">
+                    <i class="fas fa-arrow-left"></i> ආපසු යන්න
                 </button>
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                    <h3 id="current-pack-title" class="text-xl font-bold text-gray-800 mb-4">පාඩම් කළමනාකරණය</h3>
-                    <div class="grid grid-cols-1 gap-4">
-                        <input type="text" id="lesson-name" placeholder="Lesson Name" class="p-3 border rounded-lg outline-none">
-                        <textarea id="lesson-desc" placeholder="Lesson Description" class="p-3 border rounded-lg outline-none h-24"></textarea>
-                        <input type="text" id="lesson-url" placeholder="YouTube URL" class="p-3 border rounded-lg outline-none">
-                        <button id="add-lesson-btn" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold transition">Save Lesson</button>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Form -->
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 id="current-pack-title" class="text-xl font-bold text-slate-800 mb-6 font-mono">Loading...</h3>
+                        <div class="space-y-4">
+                            <input type="text" id="lesson-name" placeholder="පාඩමේ නම" class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+                            <div class="flex gap-2">
+                                <input type="text" id="lesson-url" placeholder="Video Link (YouTube/Drive/Direct)" class="flex-1 p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+                                <button onclick="previewVideo()" class="bg-slate-100 p-3 rounded-xl text-slate-600 hover:bg-slate-200 transition"><i class="fas fa-eye"></i></button>
+                            </div>
+                            <textarea id="lesson-desc" placeholder="පාඩම ගැන කෙටි හැඳින්වීමක්..." class="w-full p-3 bg-slate-50 border rounded-xl h-24 outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                            <button id="add-lesson-btn" class="w-full bg-slate-900 text-white p-4 rounded-xl font-bold shadow-xl transition transform active:scale-95">පාඩම සුරකින්න</button>
+                        </div>
+                    </div>
+
+                    <!-- Video Preview Area -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200">
+                        <h4 class="text-sm font-bold text-slate-400 mb-4 uppercase">Video Preview</h4>
+                        <div id="video-preview-cont" class="preview-box">
+                            <div class="absolute inset-0 flex items-center justify-center text-slate-500 italic text-xs">ලින්ක් එක පේස්ට් කර පෑන් සලකුණ ඔබන්න</div>
+                        </div>
                     </div>
                 </div>
-                <div id="lessons-list" class="space-y-4 mt-4"></div>
+                
+                <div id="lessons-list" class="space-y-4 mt-8"></div>
             </div>
         </div>
     </main>
 
-    <script>
-        function showSection(sectionId, event) {
-            document.getElementById('section-analytics').classList.add('hidden');
-            document.getElementById('section-studypacks').classList.add('hidden');
-            document.getElementById('section-lessons').classList.add('hidden');
-            document.getElementById('section-liveclasses').classList.add('hidden');
-            document.getElementById('section-recordings').classList.add('hidden');
-            
-            document.getElementById('section-' + sectionId).classList.remove('hidden');
-            
-            const titles = { 
-                'analytics': 'දත්ත විශ්ලේෂණ', 
-                'studypacks': 'පාඩම් මාලා (Study Packs)', 
-                'liveclasses': 'Live Classes කළමනාකරණය',
-                'recordings': 'Recordings කළමනාකරණය'
-            };
-            if(titles[sectionId]) document.getElementById('page-title').innerText = titles[sectionId];
-
-            if(sectionId !== 'lessons') {
-                document.querySelectorAll('.nav-item').forEach(item => {
-                    item.classList.remove('bg-blue-600');
-                    item.classList.add('hover:bg-slate-800');
-                });
-                if (event) event.currentTarget.classList.add('bg-blue-600');
-            }
-        }
-    </script>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push, set, serverTimestamp, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, push, set, onValue, serverTimestamp, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDUvR4OkKz0IQju7dRGju6uDnEYdeyVe3g",
-            authDomain: "malinda-lms.firebaseapp.com",
-            databaseURL: "https://malinda-lms-default-rtdb.firebaseio.com",
-            projectId: "malinda-lms",
-            storageBucket: "malinda-lms.firebasestorage.app",
-            messagingSenderId: "668911175736",
-            appId: "1:668911175736:web:01b3732c6313e696603ecd"
+        const firebaseConfig = { 
+            apiKey: "AIzaSyDUvR4OkKz0IQju7dRGju6uDnEYdeyVe3g", 
+            authDomain: "malinda-lms.firebaseapp.com", 
+            databaseURL: "https://malinda-lms-default-rtdb.firebaseio.com", 
+            projectId: "malinda-lms", 
+            storageBucket: "malinda-lms.firebasestorage.app", 
+            appId: "1:668911175736:web:01b3732c6313e696603ecd" 
         };
-
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const appId = "malinda-lms";
 
-        // --- STUDY PACKS ---
-        const packsListContainer = document.getElementById('packs-list');
-        onValue(ref(db, `artifacts/${appId}/public/data/study_packs`), (snapshot) => {
-            const data = snapshot.val();
-            packsListContainer.innerHTML = '';
-            if (data) {
-                Object.keys(data).forEach(key => {
-                    const pack = data[key];
-                    const div = document.createElement('div');
-                    div.className = "bg-white border p-4 rounded-lg shadow-sm flex flex-col justify-between";
-                    div.innerHTML = `<div><h4 class="font-bold">${pack.name}</h4><p class="text-blue-600 font-bold">LKR ${pack.price}</p></div>
-                        <button class="mt-4 bg-slate-800 text-white py-2 px-4 rounded hover:bg-slate-700 text-sm" onclick="window.manageLessons('${key}', '${pack.name}')">Manage Lessons</button>`;
-                    packsListContainer.appendChild(div);
-                });
-            }
-        });
+        window.showSection = (id) => {
+            ['studypacks', 'lessons', 'liveclasses'].forEach(s => {
+                document.getElementById('section-'+s)?.classList.add('hidden');
+                document.getElementById('tab-'+s)?.classList.remove('active-tab');
+            });
+            document.getElementById('section-'+id).classList.remove('hidden');
+            document.getElementById('tab-'+id)?.classList.add('active-tab');
+        };
 
-        document.getElementById('upload-pack-btn').addEventListener('click', async () => {
+        window.previewVideo = () => {
+            const url = document.getElementById('lesson-url').value;
+            const cont = document.getElementById('video-preview-cont');
+            if(!url) return;
+            
+            if(url.includes('youtube.com') || url.includes('youtu.be')){
+                let id = url.split('v=')[1] || url.split('/').pop();
+                cont.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}"></iframe>`;
+            } else if(url.includes('drive.google.com')){
+                let id = url.includes('/d/') ? url.split('/d/')[1].split('/')[0] : url.split('id=')[1].split('&')[0];
+                cont.innerHTML = `<iframe src="https://drive.google.com/file/d/${id}/preview"></iframe>`;
+            } else {
+                cont.innerHTML = `<video controls><source src="${url}" type="video/mp4"></video>`;
+            }
+        };
+
+        // Study Packs Logic
+        document.getElementById('add-pack-btn').addEventListener('click', () => {
             const name = document.getElementById('pack-name').value;
             const price = document.getElementById('pack-price').value;
             if(name && price) {
-                const newRef = push(ref(db, `artifacts/${appId}/public/data/study_packs`));
-                await set(newRef, { name, price: parseFloat(price), createdAt: serverTimestamp() });
-                document.getElementById('pack-name').value = ''; document.getElementById('pack-price').value = '';
+                push(ref(db, `artifacts/${appId}/public/data/study_packs`), { name, price, createdAt: serverTimestamp() });
+                document.getElementById('pack-name').value = '';
+                document.getElementById('pack-price').value = '';
             }
         });
 
-        // --- LIVE CLASSES ---
-        const liveListContainer = document.getElementById('live-list');
-        document.getElementById('add-live-btn').addEventListener('click', async () => {
-            const name = document.getElementById('live-name').value;
-            const time = document.getElementById('live-time').value;
-            const link = document.getElementById('live-link').value;
-            if(name && time && link) {
-                const newRef = push(ref(db, `artifacts/${appId}/public/data/live_classes`));
-                await set(newRef, { name, time, link, createdAt: serverTimestamp() });
-                document.getElementById('live-name').value = ''; document.getElementById('live-time').value = ''; document.getElementById('live-link').value = '';
-            }
+        onValue(ref(db, `artifacts/${appId}/public/data/study_packs`), snap => {
+            const cont = document.getElementById('packs-list');
+            cont.innerHTML = '';
+            const data = snap.val();
+            if(data) Object.keys(data).forEach(k => {
+                cont.innerHTML += `
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <h4 class="font-bold text-slate-800 text-lg mb-1">${data[k].name}</h4>
+                    <p class="text-blue-600 font-extrabold mb-4">LKR ${data[k].price}</p>
+                    <div class="flex gap-2">
+                        <button onclick="window.manageLessons('${k}', '${data[k].name}')" class="flex-1 bg-blue-600 text-white py-2 rounded-lg text-xs font-bold shadow-md">Manage Lessons</button>
+                        <button onclick="window.deletePack('${k}')" class="p-2 text-red-500 border rounded-lg hover:bg-red-50 transition"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>`;
+            });
         });
 
-        onValue(ref(db, `artifacts/${appId}/public/data/live_classes`), (snapshot) => {
-            const data = snapshot.val();
-            liveListContainer.innerHTML = '';
-            if (data) {
-                Object.keys(data).forEach(key => {
-                    const cls = data[key];
-                    const div = document.createElement('div');
-                    div.className = "p-4 border rounded-lg bg-gray-50 flex justify-between items-center";
-                    div.innerHTML = `<div><h5 class="font-bold">${cls.name}</h5><p class="text-sm text-gray-600">${new Date(cls.time).toLocaleString()}</p></div>
-                        <a href="${cls.link}" target="_blank" class="bg-blue-100 text-blue-600 py-1 px-4 rounded-full text-sm font-bold">Join Class</a>`;
-                    liveListContainer.appendChild(div);
-                });
-            }
-        });
+        window.deletePack = id => confirm('Remove Pack?') && remove(ref(db, `artifacts/${appId}/public/data/study_packs/${id}`));
 
-        // --- RECORDINGS ---
-        const recListContainer = document.getElementById('rec-list');
-        document.getElementById('add-rec-btn').addEventListener('click', async () => {
-            const name = document.getElementById('rec-name').value;
-            const link = document.getElementById('rec-link').value;
-            if(name && link) {
-                const newRef = push(ref(db, `artifacts/${appId}/public/data/recordings`));
-                await set(newRef, { name, link, createdAt: serverTimestamp() });
-                document.getElementById('rec-name').value = ''; document.getElementById('rec-link').value = '';
-            }
-        });
-
-        onValue(ref(db, `artifacts/${appId}/public/data/recordings`), (snapshot) => {
-            const data = snapshot.val();
-            recListContainer.innerHTML = '';
-            if (data) {
-                Object.keys(data).forEach(key => {
-                    const rec = data[key];
-                    const div = document.createElement('div');
-                    div.className = "p-4 border rounded-lg bg-gray-50 flex justify-between items-center";
-                    div.innerHTML = `<div><h5 class="font-bold">${rec.name}</h5></div>
-                        <a href="${rec.link}" target="_blank" class="bg-purple-100 text-purple-600 py-1 px-4 rounded-full text-sm font-bold">Watch Now</a>`;
-                    recListContainer.appendChild(div);
-                });
-            }
-        });
-
-        // --- LESSONS ---
         let activePackId = null;
         window.manageLessons = (id, name) => {
             activePackId = id;
-            document.getElementById('current-pack-title').innerText = `${name} - Lessons`;
+            document.getElementById('current-pack-title').innerText = name;
             showSection('lessons');
-            onValue(ref(db, `artifacts/${appId}/public/data/lessons/${id}`), (snapshot) => {
-                const data = snapshot.val();
-                const container = document.getElementById('lessons-list');
-                container.innerHTML = '';
-                if(data) {
-                    Object.keys(data).forEach(k => {
-                        const l = data[k];
-                        container.innerHTML += `<div class="p-4 border rounded-lg bg-white shadow-sm">
-                            <h5 class="font-bold">${l.name}</h5><p class="text-sm text-gray-500">${l.description}</p></div>`;
-                    });
-                }
+            onValue(ref(db, `artifacts/${appId}/public/data/lessons/${id}`), snap => {
+                const cont = document.getElementById('lessons-list');
+                cont.innerHTML = '';
+                const data = snap.val();
+                if(data) Object.keys(data).forEach(lk => {
+                    cont.innerHTML += `
+                    <div class="bg-white p-4 rounded-xl border flex justify-between items-center shadow-sm">
+                        <span class="font-medium text-slate-700">${data[lk].name}</span>
+                        <button onclick="window.deleteLesson('${lk}')" class="text-red-400 p-2 hover:bg-red-50 rounded-full transition"><i class="fas fa-times"></i></button>
+                    </div>`;
+                });
             });
         };
 
-        document.getElementById('add-lesson-btn').addEventListener('click', async () => {
+        document.getElementById('add-lesson-btn').addEventListener('click', () => {
             const name = document.getElementById('lesson-name').value;
-            const desc = document.getElementById('lesson-desc').value;
             const url = document.getElementById('lesson-url').value;
+            const desc = document.getElementById('lesson-desc').value;
             if(name && url && activePackId) {
-                const newRef = push(ref(db, `artifacts/${appId}/public/data/lessons/${activePackId}`));
-                await set(newRef, { name, description: desc, youtubeUrl: url, createdAt: serverTimestamp() });
-                document.getElementById('lesson-name').value = ''; document.getElementById('lesson-desc').value = ''; document.getElementById('lesson-url').value = '';
+                push(ref(db, `artifacts/${appId}/public/data/lessons/${activePackId}`), { 
+                    name, youtubeUrl: url, description: desc, createdAt: serverTimestamp() 
+                });
+                document.getElementById('lesson-name').value = '';
+                document.getElementById('lesson-url').value = '';
+                document.getElementById('lesson-desc').value = '';
+                document.getElementById('video-preview-cont').innerHTML = '<div class="absolute inset-0 flex items-center justify-center text-slate-500 italic text-xs">වීඩියෝව සුරැකිණි.</div>';
             }
         });
+
+        window.deleteLesson = lid => confirm('Remove Lesson?') && remove(ref(db, `artifacts/${appId}/public/data/lessons/${activePackId}/${lid}`));
     </script>
 </body>
 </html>
