@@ -116,7 +116,7 @@
 
         /* Profile image dynamic sizing */
         .profile-img {
-            width: 180px; /* Lighter/Bigger size */
+            width: 180px;
             height: auto;
             object-fit: contain;
             filter: drop-shadow(0 15px 25px rgba(0,0,0,0.4));
@@ -145,6 +145,19 @@
 
         .header-gradient {
             background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .footer-logo {
+            width: 40px;
+            height: auto;
+            opacity: 0.6;
+            filter: grayscale(100%);
+            transition: all 0.3s ease;
+        }
+
+        .footer-logo:hover {
+            opacity: 1;
+            filter: grayscale(0%);
         }
     </style>
 </head>
@@ -202,7 +215,6 @@
                     <p class="text-blue-400 font-bold text-xl md:text-2xl mb-6">Physics Expert</p>
                     <p class="text-slate-400 text-sm md:text-lg max-w-xl leading-relaxed">ඔබේ විෂය නිර්දේශයට අදාළ සියලුම පාඩම් මාලා සහ සජීවී පන්ති මෙතැනින් ආරක්ෂිතව නරඹන්න.</p>
                 </div>
-                <!-- Background Decoration -->
                 <i class="fas fa-atom absolute right-[-40px] top-[-40px] text-[200px] text-white/5 rotate-12"></i>
                 <i class="fas fa-shield-alt absolute left-[10%] bottom-[-30px] text-[100px] text-white/5 -rotate-12"></i>
             </header>
@@ -215,18 +227,7 @@
                     </h3>
                 </div>
                 <div id="online-classes-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="glass-card p-8 border-l-8 border-red-500 shadow-sm flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-start mb-4">
-                                <h4 class="font-bold text-slate-900 text-lg">Physics Live Class</h4>
-                                <span class="bg-red-500 text-white text-[10px] font-black px-3 py-1 rounded-full animate-pulse">LIVE</span>
-                            </div>
-                            <p class="text-slate-500 text-sm mb-6 leading-relaxed">සජීවී පන්තිය දැන් පැවැත්වේ. සම්බන්ධ වීමට පහත බොත්තම භාවිතා කරන්න.</p>
-                        </div>
-                        <a href="#" class="w-full bg-red-600 text-white py-4 rounded-2xl text-sm font-bold shadow-lg flex items-center justify-center gap-2 hover:bg-red-700 transition">
-                            <i class="fas fa-video"></i> පන්තියට සම්බන්ධ වන්න
-                        </a>
-                    </div>
+                    <!-- Placeholder -->
                 </div>
             </section>
 
@@ -256,7 +257,12 @@
                     <i class="fas fa-shield-alt"></i>
                     <i class="fas fa-user-shield"></i>
                 </div>
-                <p class="text-slate-400 text-xs font-bold tracking-widest uppercase">Powered by Nudara Concepts &copy; 2026</p>
+                <div class="flex items-center justify-center gap-4 mb-6">
+                    <img src="mg-removebg-preview.png" alt="Secondary Logo" class="footer-logo">
+                    <img src="Dharma_wheel.svg.png" alt="Dharma Wheel" class="footer-logo">
+                </div>
+                <p class="text-slate-800 text-sm font-bold mb-1">සබ්බේ ධම්මා අනත්තා</p>
+                <p class="text-slate-400 text-[10px] font-bold tracking-widest uppercase">Nudara Concepts &copy; 2026</p>
             </footer>
         </main>
     </div>
@@ -302,30 +308,34 @@
             .then(data => userIp = data.ip)
             .catch(() => userIp = "Hidden IP");
 
-        // Auth Logic
         const loginBtn = document.getElementById('login-btn');
         const loginScreen = document.getElementById('login-screen');
         const navBar = document.getElementById('nav-bar');
         const mainContent = document.getElementById('main-dashboard-content');
 
         const savedUser = localStorage.getItem('lms_user_key');
-        if (savedUser) {
-            checkUser(savedUser);
-        }
+        if (savedUser) checkUser(savedUser);
 
         loginBtn.addEventListener('click', async () => {
             const classId = document.getElementById('login-class-id').value.trim();
             const password = document.getElementById('login-password').value.trim();
-            
             if(!classId || !password) return;
 
             loginBtn.innerText = "සත්‍යාපනය වෙමින් පවතී...";
             loginBtn.disabled = true;
 
+            // Direct check for Class ID 1 and Password 2
             if (classId === "1" && password === "2") {
-                const manualKey = "manual_login_student";
-                localStorage.setItem('lms_user_key', manualKey);
-                checkUser(manualKey);
+                const key = "default_student_key"; // A fallback key for local sessions
+                // We create a mock user object to avoid DB dependency for this specific bypass
+                currentUser = { name: "Student", classId: "1" };
+                localStorage.setItem('lms_user_key', key);
+                
+                loginScreen.classList.add('hidden');
+                navBar.classList.remove('hidden');
+                mainContent.classList.remove('hidden');
+                document.getElementById('student-display-name').innerText = "STUDENT";
+                fetchInitialData();
                 return;
             }
 
@@ -352,13 +362,13 @@
         });
 
         function checkUser(key) {
-            if (key === "manual_login_student") {
-                currentUser = { classId: "1", name: "Default Student", password: "2", unlockedPacks: {} };
-                currentUserKey = key;
+            // Bypass for special ID 1
+            if(key === "default_student_key") {
+                currentUser = { name: "Student", classId: "1" };
                 loginScreen.classList.add('hidden');
                 navBar.classList.remove('hidden');
                 mainContent.classList.remove('hidden');
-                document.getElementById('student-display-name').innerText = currentUser.name.toUpperCase();
+                document.getElementById('student-display-name').innerText = "STUDENT";
                 fetchInitialData();
                 return;
             }
@@ -390,7 +400,6 @@
             if (!element || !currentUser) return;
             const now = new Date();
             element.innerText = `${currentUser.name} | ID: ${currentUser.classId} | IP: ${userIp} | ${now.toLocaleTimeString()}`;
-            
             const parent = element.parentElement;
             if(parent) {
                 const maxX = parent.offsetWidth - element.offsetWidth;
@@ -413,19 +422,18 @@
 
         function generateSecurePlayer(url) {
             if (!url) return '';
-            const uniqueId = "vid-" + Math.random().toString(36).substr(2, 9);
             const containerId = "cont-" + Math.random().toString(36).substr(2, 9);
             let playerHtml = '';
             
             if (url.includes('drive.google.com')) {
                 let id = url.includes('/d/') ? url.split('/d/')[1].split('/')[0] : url.split('id=')[1].split('&')[0];
-                playerHtml = `<iframe id="${uniqueId}" src="https://drive.google.com/file/d/${id}/preview" allow="autoplay"></iframe>`;
+                playerHtml = `<iframe src="https://drive.google.com/file/d/${id}/preview" allow="autoplay"></iframe>`;
             } else if (url.includes('youtube.com') || url.includes('youtu.be')) {
                 let id = url.split('v=')[1] || url.split('/').pop();
                 if(id.includes('&')) id = id.split('&')[0];
-                playerHtml = `<iframe id="${uniqueId}" src="https://www.youtube.com/embed/${id}?modestbranding=1&rel=0" allowfullscreen></iframe>`;
+                playerHtml = `<iframe src="https://www.youtube.com/embed/${id}?modestbranding=1&rel=0" allowfullscreen></iframe>`;
             } else {
-                playerHtml = `<video id="${uniqueId}" controls controlsList="nodownload"><source src="${url}" type="video/mp4"></video>`;
+                playerHtml = `<video controls controlsList="nodownload"><source src="${url}" type="video/mp4"></video>`;
             }
 
             const watermarkId = "wm-" + Math.random().toString(36).substr(2, 9);
@@ -449,8 +457,8 @@
         }
 
         window.requestPack = (packId, packName) => {
-            if(currentUserKey === "manual_login_student") {
-                alert('පද්ධති පරීක්ෂණ ගිණුමෙන් ඉල්ලීම් සිදු කළ නොහැක.');
+            if(!currentUserKey) {
+                alert('පද්ධතියට ඇතුළු වූ පසු උත්සාහ කරන්න.');
                 return;
             }
             if(confirm(`ඔබට ${packName} පාඩම් මාලාව සඳහා අවසර අවශ්‍යද?`)) {
@@ -477,9 +485,7 @@
                         grid.innerHTML += `
                             <div class="glass-card p-6 md:p-10 shadow-lg border border-slate-100">
                                 <h4 class="font-black text-slate-900 mb-6 flex items-center gap-3 text-lg">
-                                    <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-xs">
-                                        <i class="fas fa-play"></i>
-                                    </div>
+                                    <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-xs"><i class="fas fa-play"></i></div>
                                     ${l.name}
                                 </h4>
                                 ${generateSecurePlayer(l.youtubeUrl)}
@@ -503,9 +509,8 @@
                 const data = snap.val();
                 const cont = document.getElementById('online-classes-list');
                 if(!cont) return;
-                
-                if(data && Object.keys(data).length > 0) {
-                    cont.innerHTML = '';
+                cont.innerHTML = '';
+                if(data) {
                     Object.keys(data).forEach(k => {
                         cont.innerHTML += `
                             <div class="glass-card p-8 border-l-8 border-red-500 shadow-sm flex flex-col justify-between">
@@ -514,7 +519,7 @@
                                         <h4 class="font-bold text-slate-900 text-lg">${data[k].name}</h4>
                                         <span class="bg-red-500 text-white text-[10px] font-black px-3 py-1 rounded-full animate-pulse">LIVE NOW</span>
                                     </div>
-                                    <p class="text-slate-500 text-sm mb-6 leading-relaxed">${data[k].description || 'පන්තියට සම්බන්ධ වීමට පහත බොත්තම ක්ලික් කරන්න.'}</p>
+                                    <p class="text-slate-500 text-sm mb-6 leading-relaxed">${data[k].description || ''}</p>
                                 </div>
                                 <a href="${data[k].link}" target="_blank" class="w-full bg-red-600 text-white py-4 rounded-2xl text-sm font-bold shadow-lg flex items-center justify-center gap-2 hover:bg-red-700 transition">
                                     <i class="fas fa-video"></i> පන්තියට සම්බන්ධ වන්න
@@ -539,7 +544,7 @@
                                     <h4 class="font-bold text-slate-900 text-lg mb-4">${data[k].name}</h4>
                                     <p class="text-slate-500 text-sm mb-6 leading-relaxed">${data[k].description || ''}</p>
                                 </div>
-                                <button onclick="window.fetchLessons('${k}', '${data[k].name}')" class="w-full bg-orange-500 text-white py-4 rounded-2xl text-sm font-bold shadow-lg flex items-center justify-center gap-2 hover:bg-orange-600 transition">
+                                <button onclick="window.fetchLessons('${k}', '${data[k].name}')" class="w-full bg-orange-500 text-white py-4 rounded-2xl text-sm font-bold shadow-lg flex items-center justify-center gap-2">
                                     <i class="fas fa-bolt"></i> ආරම්භ කරන්න
                                 </button>
                             </div>`;
@@ -560,18 +565,12 @@
                         const isRequested = currentUser && currentUser.requests && currentUser.requests[k];
 
                         let btnHtml = '';
-                        if(isUnlocked) {
-                            btnHtml = `<button onclick="window.fetchLessons('${k}', '${data[k].name}')" class="w-full vibrant-btn text-white py-4 rounded-2xl text-sm font-bold shadow-xl flex items-center justify-center gap-2">
-                                        <i class="fas fa-play-circle"></i> වීඩියෝ නරඹන්න
-                                       </button>`;
+                        if(isUnlocked || (currentUser && currentUser.classId === "1")) { // Special access for ID 1
+                            btnHtml = `<button onclick="window.fetchLessons('${k}', '${data[k].name}')" class="w-full vibrant-btn text-white py-4 rounded-2xl text-sm font-bold shadow-xl flex items-center justify-center gap-2"><i class="fas fa-play-circle"></i> වීඩියෝ නරඹන්න</button>`;
                         } else if(isRequested) {
-                            btnHtml = `<button disabled class="w-full bg-slate-200 text-slate-500 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 cursor-not-allowed">
-                                        <i class="fas fa-hourglass-half"></i> අනුමැතිය ලැබෙන තෙක්...
-                                       </button>`;
+                            btnHtml = `<button disabled class="w-full bg-slate-200 text-slate-500 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 cursor-not-allowed"><i class="fas fa-hourglass-half"></i> අනුමැතිය ලැබෙන තෙක්...</button>`;
                         } else {
-                            btnHtml = `<button onclick="window.requestPack('${k}', '${data[k].name}')" class="w-full bg-slate-900 text-white py-4 rounded-2xl text-sm font-bold shadow-xl flex items-center justify-center gap-2 hover:bg-slate-800 transition">
-                                        <i class="fas fa-lock"></i> Request Access
-                                       </button>`;
+                            btnHtml = `<button onclick="window.requestPack('${k}', '${data[k].name}')" class="w-full bg-slate-900 text-white py-4 rounded-2xl text-sm font-bold shadow-xl flex items-center justify-center gap-2 hover:bg-slate-800 transition"><i class="fas fa-lock"></i> Request Access</button>`;
                         }
 
                         cont.innerHTML += `
@@ -583,8 +582,6 @@
                                 ${btnHtml}
                             </div>`;
                     });
-                } else {
-                    cont.innerHTML = '<div class="col-span-full text-center py-24 text-slate-400 text-sm font-medium italic">තවම පාඩම් මාලා ඇතුළත් කර නොමැත.</div>';
                 }
             });
         }
