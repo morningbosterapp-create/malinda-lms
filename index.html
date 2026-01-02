@@ -148,16 +148,15 @@
         }
 
         .footer-logo {
-            width: 40px;
+            width: 50px;
             height: auto;
-            opacity: 0.6;
-            filter: grayscale(100%);
+            opacity: 0.8;
             transition: all 0.3s ease;
         }
 
         .footer-logo:hover {
             opacity: 1;
-            filter: grayscale(0%);
+            transform: rotate(15deg);
         }
     </style>
 </head>
@@ -253,12 +252,11 @@
             <!-- Footer Section -->
             <footer class="text-center py-14 border-t border-slate-200 mt-20">
                 <div class="flex justify-center gap-4 mb-4 text-slate-300">
-                    <i class="fas fa-lock"></i>
-                    <i class="fas fa-shield-alt"></i>
-                    <i class="fas fa-user-shield"></i>
+                    <i class="fas fa-lock text-slate-400"></i>
+                    <i class="fas fa-shield-alt text-slate-400"></i>
+                    <i class="fas fa-user-shield text-slate-400"></i>
                 </div>
-                <div class="flex items-center justify-center gap-4 mb-6">
-                    <img src="mg-removebg-preview.png" alt="Secondary Logo" class="footer-logo">
+                <div class="flex items-center justify-center mb-6">
                     <img src="Dharma_wheel.svg.png" alt="Dharma Wheel" class="footer-logo">
                 </div>
                 <p class="text-slate-800 text-sm font-bold mb-1">සබ්බේ ධම්මා අනත්තා</p>
@@ -326,8 +324,7 @@
 
             // Direct check for Class ID 1 and Password 2
             if (classId === "1" && password === "2") {
-                const key = "default_student_key"; // A fallback key for local sessions
-                // We create a mock user object to avoid DB dependency for this specific bypass
+                const key = "default_student_key";
                 currentUser = { name: "Student", classId: "1" };
                 localStorage.setItem('lms_user_key', key);
                 
@@ -362,7 +359,6 @@
         });
 
         function checkUser(key) {
-            // Bypass for special ID 1
             if(key === "default_student_key") {
                 currentUser = { name: "Student", classId: "1" };
                 loginScreen.classList.add('hidden');
@@ -565,7 +561,7 @@
                         const isRequested = currentUser && currentUser.requests && currentUser.requests[k];
 
                         let btnHtml = '';
-                        if(isUnlocked || (currentUser && currentUser.classId === "1")) { // Special access for ID 1
+                        if(isUnlocked || (currentUser && currentUser.classId === "1")) {
                             btnHtml = `<button onclick="window.fetchLessons('${k}', '${data[k].name}')" class="w-full vibrant-btn text-white py-4 rounded-2xl text-sm font-bold shadow-xl flex items-center justify-center gap-2"><i class="fas fa-play-circle"></i> වීඩියෝ නරඹන්න</button>`;
                         } else if(isRequested) {
                             btnHtml = `<button disabled class="w-full bg-slate-200 text-slate-500 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 cursor-not-allowed"><i class="fas fa-hourglass-half"></i> අනුමැතිය ලැබෙන තෙක්...</button>`;
